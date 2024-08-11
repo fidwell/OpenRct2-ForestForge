@@ -1,8 +1,13 @@
+import Biome from "./biome";
+
 export class SelectionTool {
   _isDragging = false;
   _selection: CoordsXY[] = [];
 
-  constructor(readonly name: string, readonly cursor: CursorType) {
+  constructor(
+    readonly name: string,
+    readonly cursor: CursorType,
+    readonly biome: Biome) {
   }
 
   activate(): void {
@@ -62,23 +67,16 @@ function finish(tool: SelectionTool): void {
   toggleGridOverlay(false);
   ui.tileSelection.tiles = [];
 
-  const smallObjects = objectManager
-    .getAllObjects("small_scenery").filter(o => o.name.indexOf("Tree") >= 0)
-    .map(o => o.index);
-
   tool._selection.forEach((location: CoordsXY) => {
     const tileHere = map.getTile(location.x/32, location.y/32);
-    console.log(`Filling at ${tileHere.x},${tileHere.y}`);
     const surface = tileHere.elements.filter(e => e.type === "surface")[0];
-
-    console.log(`BH ${surface.baseHeight} CH ${surface.clearanceHeight}`);
 
     context.executeAction("smallsceneryplace", <SmallSceneryPlaceArgs>{
       x: location.x,
       y: location.y,
       z: 8 * surface.clearanceHeight,
       direction: context.getRandom(0, 4),
-      object: smallObjects[context.getRandom(0, smallObjects.length)],
+      object: tool.biome.getTree(),
       quadrant: 0,
       primaryColour: 0,
       secondaryColour: 0,

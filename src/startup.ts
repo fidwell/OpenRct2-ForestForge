@@ -1,7 +1,11 @@
+import { BiomeFactory } from "./biomeFactory";
 import { SelectionTool } from "./selectionTool";
 
 function onClickMenuItem() {
-  new SelectionTool("forestForger", "tree_down").activate();
+  const biomes = BiomeFactory.biomes();
+  console.log(`biomes: ${JSON.stringify(biomes)}`);
+
+  new SelectionTool("forestForger", "tree_down", biomes[0]).activate();
 }
 
 export function startup() {
