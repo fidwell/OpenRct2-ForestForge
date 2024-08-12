@@ -71,34 +71,48 @@ function finish(tool: SelectionTool): void {
   tool._selection.forEach((location: CoordsXY) => {
     const tileHere = map.getTile(location.x, location.y);
     const surface = tileHere.elements.filter(e => e.type === "surface")[0];
-
     const numberOfSelectedNeighbors = MapUtilities.numberOfSelectedNeighbors(tileHere, tool._selection);
-    const treeHere = numberOfSelectedNeighbors >= 6
-      ? tool.biome.getTreeBig()
-      : numberOfSelectedNeighbors >= 3
-        ? tool.biome.getTreeMedium()
-        : tool.biome.getTreeSmall();
 
-    const args = <SmallSceneryPlaceArgs>{
-      x: location.x * 32,
-      y: location.y * 32,
-      z: 8 * surface.clearanceHeight,
-      direction: context.getRandom(0, 4),
-      object: treeHere,
-      quadrant: 0,
-      primaryColour: 0,
-      secondaryColour: 0,
-      tertiaryColour: 0
-    };
+    if (numberOfSelectedNeighbors <= 2) {
+      MapUtilities.neighboredCorners(location, tool._selection).forEach((quadrant: number) => {
+        const treeHere = tool.biome.getTreeSmall();
+        placeObject(location, surface, treeHere, quadrant)
+      });
+    } else {
+      const treeHere = numberOfSelectedNeighbors >= 6
+        ? tool.biome.getTreeBig()
+        : tool.biome.getTreeMedium();
+      placeObject(location, surface, treeHere, 0);
+    }
 
-    context.queryAction("smallsceneryplace", args, (result: GameActionResult) => {
-      if (result.error === undefined || result.error === 0) {
-        context.executeAction("smallsceneryplace", args);
-      }
-    })
+
   });
 
   tool._selection = [];
+}
+
+function placeObject(
+  location: CoordsXY,
+  surface: TileElement,
+  object: number,
+  quadrant: number) {
+  const args = <SmallSceneryPlaceArgs>{
+    x: location.x * 32,
+    y: location.y * 32,
+    z: 8 * surface.clearanceHeight,
+    direction: context.getRandom(0, 4),
+    object,
+    quadrant: quadrant,
+    primaryColour: 0,
+    secondaryColour: 0,
+    tertiaryColour: 0
+  };
+
+  context.queryAction("smallsceneryplace", args, (result: GameActionResult) => {
+    if (result.error === undefined || result.error === 0) {
+      context.executeAction("smallsceneryplace", args);
+    }
+  });
 }
 
 function addIfNotExists(collection: CoordsXY[], location: CoordsXY) {
