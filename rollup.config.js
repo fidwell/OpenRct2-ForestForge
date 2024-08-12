@@ -8,7 +8,7 @@ import { promisify } from "util";
 
 const options =
 {
-  filename: "ForestForger.js",
+  filename: "ForestForge.js",
   build: process.env.BUILD || "development"
 };
 

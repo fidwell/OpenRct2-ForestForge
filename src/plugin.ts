@@ -3,7 +3,7 @@
 import { startup } from "./startup";
 
 registerPlugin({
-  name: "ForestForger",
+  name: "ForestForge",
   version: "1.0",
   authors: ["fidwell"],
   type: "remote",
