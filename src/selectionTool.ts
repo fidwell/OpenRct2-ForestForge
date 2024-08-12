@@ -79,7 +79,7 @@ function finish(tool: SelectionTool): void {
         ? tool.biome.getTreeMedium()
         : tool.biome.getTreeSmall();
 
-    context.executeAction("smallsceneryplace", <SmallSceneryPlaceArgs>{
+    const args = <SmallSceneryPlaceArgs>{
       x: location.x * 32,
       y: location.y * 32,
       z: 8 * surface.clearanceHeight,
@@ -89,7 +89,13 @@ function finish(tool: SelectionTool): void {
       primaryColour: 0,
       secondaryColour: 0,
       tertiaryColour: 0
-    });
+    };
+
+    context.queryAction("smallsceneryplace", args, (result: GameActionResult) => {
+      if (result.error === undefined || result.error === 0) {
+        context.executeAction("smallsceneryplace", args);
+      }
+    })
   });
 
   tool._selection = [];
