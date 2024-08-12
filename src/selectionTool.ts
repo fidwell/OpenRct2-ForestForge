@@ -81,7 +81,7 @@ function finish(tool: SelectionTool): void {
       });
     } else {
       const treeHere = numberOfSelectedNeighbors >= 6
-        ? tool.biome.getTreeBig()
+        ? tool.biome.getTreeLarge()
         : tool.biome.getTreeMedium();
       placeObject(location, surface, treeHere, 0);
     }
