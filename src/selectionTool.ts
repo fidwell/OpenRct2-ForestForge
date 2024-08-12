@@ -4,6 +4,7 @@ import SceneryDesc from "./sceneryDesc";
 
 export class SelectionTool {
   _isDragging = false;
+  _isAddingToSelection = true;
   _selection: CoordsXY[] = [];
 
   constructor(
@@ -38,8 +39,10 @@ function down(tool: SelectionTool, args: ToolEventArgs): void {
   if (!location)
     return;
 
+  // Click a selected tile to de-select
+  tool._isAddingToSelection = !isSelected(tool._selection, location);
   tool._isDragging = true;
-  addIfNotExists(tool._selection, location);
+  tool._selection = toggleTile(tool._selection, location, tool._isAddingToSelection);
 }
 
 function up(tool: SelectionTool, args: ToolEventArgs): void {
@@ -61,8 +64,7 @@ function move(tool: SelectionTool, args: ToolEventArgs): void {
     return;
 
   const location = MapUtilities.toTileCoords(args.mapCoords);
-
-  addIfNotExists(tool._selection, location);
+  tool._selection = toggleTile(tool._selection, location, tool._isAddingToSelection);
 }
 
 function finish(tool: SelectionTool): void {
@@ -118,11 +120,29 @@ function placeObject(
   });
 }
 
-function addIfNotExists(collection: CoordsXY[], location: CoordsXY) {
-  if (collection.some(l => l.x === location.x && l.y === location.y))
-    return;
-  collection.push(location);
+function toggleTile(collection: CoordsXY[], location: CoordsXY, isAdding: boolean): CoordsXY[] {
+  if (isAdding) {
+    collection = addIfNotExists(collection, location);
+  } else {
+    collection = remove(collection, location);
+  }
   ui.tileSelection.tiles = collection.map(c => MapUtilities.toMapCoords(c));
+  return collection;
+}
+
+function addIfNotExists(collection: CoordsXY[], location: CoordsXY): CoordsXY[] {
+  if (isSelected(collection, location))
+    return collection;
+  collection.push(location);
+  return collection;
+}
+
+function remove(collection: CoordsXY[], location: CoordsXY): CoordsXY[] {
+  return collection.filter(i => !(i.x === location.x && i.y === location.y));
+}
+
+function isSelected(collection: CoordsXY[], location: CoordsXY) {
+  return collection.some(l => l.x === location.x && l.y === location.y);
 }
 
 const viewportFlagGridlines = (1 << 7);
