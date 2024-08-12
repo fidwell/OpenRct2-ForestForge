@@ -44,11 +44,18 @@ export default class Biome {
 
   getObject(list: SceneryDesc[]): SceneryDesc | undefined {
     if (list.length === 0) {
+      ui.showError("ForestForge", "No foliage could be placed.");
       return undefined;
     }
 
     const weights = list.map(i => i.weight);
     const totalOfWeights = weights.reduce((a, b) => a + b, 0);
+
+    if (totalOfWeights <= 0) {
+      ui.showError("ForestForge", "Invalid weights for foliage selection.");
+      return list[0];
+    }
+
     let randomValue = context.getRandom(0, totalOfWeights);
     for (let i = 0; i < list.length; i++) {
       if (randomValue < list[i].weight) {
