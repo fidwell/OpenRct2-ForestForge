@@ -14,16 +14,12 @@ export abstract class BiomeFactory {
         "rct2.scenery_small.tmc",
         "rct2.scenery_small.tmzp",
         "rct2.scenery_small.tns",
-        "rct2.scenery_small.trf"
-      ],
-      [
+        "rct2.scenery_small.trf",
         "rct2.scenery_small.tce",
         "rct2.scenery_small.tcy",
         "rct2.scenery_small.tghc2",
         "rct2.scenery_small.trf2",
-        "rct2.scenery_small.twn"
-      ],
-      [
+        "rct2.scenery_small.twn",
         "rct2.scenery_small.tcj",
         "rct2.scenery_small.tmbj",
         "rct2.scenery_small.tsh0",

@@ -1,17 +1,25 @@
 export default class Biome {
-  private bigIndexes: number[];
-  private mediumIndexes: number[];
-  private smallIndexes: number[];
+  private bigIndexes: number[] = [];
+  private mediumIndexes: number[] = [];
+  private smallIndexes: number[] = [];
 
-  constructor(
-    big: string[],
-    medium: string[],
-    small: string[]) {
-      const allScenery = objectManager.getAllObjects("small_scenery");
+  constructor(treeIds: string[]) {
+    const allScenery = objectManager.getAllObjects("small_scenery");
+    const biomeScenery = allScenery.filter(s => treeIds.some(id => s.identifier === id));
 
-      this.bigIndexes = big.map(t => allScenery.filter(s => s.identifier === t)[0].index);
-      this.mediumIndexes = medium.map(t => allScenery.filter(s => s.identifier === t)[0].index);
-      this.smallIndexes = small.map(t => allScenery.filter(s => s.identifier === t)[0].index);
+    biomeScenery.forEach((obj: SmallSceneryObject) => {
+      const isFullTile = (obj.flags & 0x01) === 1;
+
+      if (isFullTile) {
+        if ((obj.height / 8) > 10) {
+          this.bigIndexes.push(obj.index);
+        } else {
+          this.mediumIndexes.push(obj.index);
+        }
+      } else {
+        this.smallIndexes.push(obj.index);
+      }
+    });
   }
 
   getTreeBig(): number {

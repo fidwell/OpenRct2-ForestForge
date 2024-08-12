@@ -75,7 +75,7 @@ function finish(tool: SelectionTool): void {
     const numberOfSelectedNeighbors = MapUtilities.numberOfSelectedNeighbors(tileHere, tool._selection);
     const treeHere = numberOfSelectedNeighbors >= 6
       ? tool.biome.getTreeBig()
-      : numberOfSelectedNeighbors >= 2
+      : numberOfSelectedNeighbors >= 3
         ? tool.biome.getTreeMedium()
         : tool.biome.getTreeSmall();
 
