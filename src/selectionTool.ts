@@ -77,13 +77,17 @@ function finish(tool: SelectionTool): void {
     if (numberOfSelectedNeighbors <= 2) {
       MapUtilities.neighboredCorners(location, tool._selection).forEach((quadrant: number) => {
         const treeHere = tool.biome.getTreeSmall();
-        placeObject(location, surface, treeHere, quadrant)
+        if (treeHere !== undefined) {
+          placeObject(location, surface, treeHere, quadrant)
+        }
       });
     } else {
       const treeHere = numberOfSelectedNeighbors >= 6
         ? tool.biome.getTreeLarge()
         : tool.biome.getTreeMedium();
-      placeObject(location, surface, treeHere, 0);
+      if (treeHere !== undefined) {
+        placeObject(location, surface, treeHere, 0);
+      }
     }
   });
 
@@ -102,7 +106,7 @@ function placeObject(
     direction: context.getRandom(0, 4),
     object: object.index,
     quadrant: quadrant,
-    primaryColour: object.primaryColour,
+    primaryColour: object.primaryColour ?? 0,
     secondaryColour: 0,
     tertiaryColour: 0
   };
