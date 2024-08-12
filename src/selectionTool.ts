@@ -1,4 +1,5 @@
 import Biome from "./biome";
+import { MapUtilities } from "./mapUtilities";
 
 export class SelectionTool {
   _isDragging = false;
@@ -32,7 +33,7 @@ function down(tool: SelectionTool, args: ToolEventArgs): void {
   if (!args.mapCoords)
     return;
 
-  const location = toTileCoords(args.mapCoords);
+  const location = MapUtilities.toTileCoords(args.mapCoords);
   if (!location)
     return;
 
@@ -44,7 +45,7 @@ function up(tool: SelectionTool, args: ToolEventArgs): void {
   if (!args.mapCoords)
     return;
 
-  const location = toTileCoords(args.mapCoords);
+  const location = MapUtilities.toTileCoords(args.mapCoords);
   if (!location)
     return;
 
@@ -58,7 +59,7 @@ function move(tool: SelectionTool, args: ToolEventArgs): void {
   if (!tool._isDragging || !tool._selection)
     return;
 
-  const location = toTileCoords(args.mapCoords);
+  const location = MapUtilities.toTileCoords(args.mapCoords);
 
   addIfNotExists(tool._selection, location);
 }
@@ -68,15 +69,22 @@ function finish(tool: SelectionTool): void {
   ui.tileSelection.tiles = [];
 
   tool._selection.forEach((location: CoordsXY) => {
-    const tileHere = map.getTile(location.x/32, location.y/32);
+    const tileHere = map.getTile(location.x, location.y);
     const surface = tileHere.elements.filter(e => e.type === "surface")[0];
 
+    const numberOfSelectedNeighbors = MapUtilities.numberOfSelectedNeighbors(tileHere, tool._selection);
+    const treeHere = numberOfSelectedNeighbors >= 6
+      ? tool.biome.getTreeBig()
+      : numberOfSelectedNeighbors >= 2
+        ? tool.biome.getTreeMedium()
+        : tool.biome.getTreeSmall();
+
     context.executeAction("smallsceneryplace", <SmallSceneryPlaceArgs>{
-      x: location.x,
-      y: location.y,
+      x: location.x * 32,
+      y: location.y * 32,
       z: 8 * surface.clearanceHeight,
       direction: context.getRandom(0, 4),
-      object: tool.biome.getTree(),
+      object: treeHere,
       quadrant: 0,
       primaryColour: 0,
       secondaryColour: 0,
@@ -91,7 +99,7 @@ function addIfNotExists(collection: CoordsXY[], location: CoordsXY) {
   if (collection.some(l => l.x === location.x && l.y === location.y))
     return;
   collection.push(location);
-  ui.tileSelection.tiles = [...collection];
+  ui.tileSelection.tiles = collection.map(c => MapUtilities.toMapCoords(c));
 }
 
 const viewportFlagGridlines = (1 << 7);
@@ -101,11 +109,4 @@ function toggleGridOverlay(value: boolean): void {
   } else {
     ui.mainViewport.visibilityFlags &= ~(viewportFlagGridlines);
   }
-}
-
-function toTileCoords(coord: CoordsXY): CoordsXY {
-  return {
-    x: Math.floor(coord.x / 32) * 32,
-    y: Math.floor(coord.y / 32) * 32
-  };
 }

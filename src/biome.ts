@@ -7,22 +7,22 @@ export default class Biome {
     big: string[],
     medium: string[],
     small: string[]) {
-      const smallScenery = objectManager.getAllObjects("small_scenery");
+      const allScenery = objectManager.getAllObjects("small_scenery");
 
-      this.bigIndexes = big.map(t => smallScenery.filter(s => s.identifier === t)[0].index);
-      this.mediumIndexes = medium.map(t => smallScenery.filter(s => s.identifier === t)[0].index);
-      this.smallIndexes = small.map(t => smallScenery.filter(s => s.identifier === t)[0].index);
+      this.bigIndexes = big.map(t => allScenery.filter(s => s.identifier === t)[0].index);
+      this.mediumIndexes = medium.map(t => allScenery.filter(s => s.identifier === t)[0].index);
+      this.smallIndexes = small.map(t => allScenery.filter(s => s.identifier === t)[0].index);
   }
 
-  getTree(): number {
+  getTreeBig(): number {
     return this.bigIndexes[context.getRandom(0, this.bigIndexes.length)];
   }
 
   getTreeMedium(): number {
-    return this.mediumIndexes[context.getRandom(0, this.bigIndexes.length)];
+    return this.mediumIndexes[context.getRandom(0, this.mediumIndexes.length)];
   }
 
   getTreeSmall(): number {
-    return this.smallIndexes[context.getRandom(0, this.bigIndexes.length)];
+    return this.smallIndexes[context.getRandom(0, this.smallIndexes.length)];
   }
 }

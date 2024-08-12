@@ -3,8 +3,6 @@ import { SelectionTool } from "./selectionTool";
 
 function onClickMenuItem() {
   const biomes = BiomeFactory.biomes();
-  console.log(`biomes: ${JSON.stringify(biomes)}`);
-
   new SelectionTool("forestForger", "tree_down", biomes[0]).activate();
 }
 
