@@ -27,7 +27,9 @@ export abstract class BiomeFactory {
         "rct2.scenery_small.tsh2",
         "rct2.scenery_small.tsh3",
         "rct2.scenery_small.tsh4",
-        "rct2.scenery_small.tsh5"
+        "rct2.scenery_small.tsh5",
+        "rct2ww.scenery_small.japsnotr",
+        "rct2.scenery_small.tg19"
       ]
     );
     return [defaultBiome];

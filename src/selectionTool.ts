@@ -1,5 +1,6 @@
 import Biome from "./biome";
 import { MapUtilities } from "./mapUtilities";
+import SceneryDesc from "./sceneryDesc";
 
 export class SelectionTool {
   _isDragging = false;
@@ -84,8 +85,6 @@ function finish(tool: SelectionTool): void {
         : tool.biome.getTreeMedium();
       placeObject(location, surface, treeHere, 0);
     }
-
-
   });
 
   tool._selection = [];
@@ -94,16 +93,16 @@ function finish(tool: SelectionTool): void {
 function placeObject(
   location: CoordsXY,
   surface: TileElement,
-  object: number,
+  object: SceneryDesc,
   quadrant: number) {
   const args = <SmallSceneryPlaceArgs>{
     x: location.x * 32,
     y: location.y * 32,
-    z: 8 * surface.clearanceHeight,
+    z: 8 * (surface.clearanceHeight - (object.verticalOffset ?? 0)),
     direction: context.getRandom(0, 4),
-    object,
+    object: object.index,
     quadrant: quadrant,
-    primaryColour: 0,
+    primaryColour: object.primaryColour,
     secondaryColour: 0,
     tertiaryColour: 0
   };
