@@ -4,7 +4,7 @@ import SceneryDesc from "./sceneryDesc";
 
 export abstract class BiomeFactory {
   public static biomes(): Biome[] {
-    const defaultBiomeDescs = <SceneryDesc[]>[
+    const defaultBiome = <SceneryDesc[]>[
       new SceneryDesc("rct2.scenery_small.tap", 1),
       new SceneryDesc("rct2.scenery_small.tcc", 1),
       new SceneryDesc("rct2.scenery_small.tcf", 3),
@@ -29,7 +29,6 @@ export abstract class BiomeFactory {
       new SceneryDesc("rct2.scenery_small.tsh3", 2),
       new SceneryDesc("rct2.scenery_small.tsh4", 4),
       new SceneryDesc("rct2.scenery_small.tsh5", 2),
-      new SceneryDesc("rct2ww.scenery_small.japsnotr", 1, undefined, 5),
       new SceneryDesc("rct2.scenery_small.tg19", 4, Colour.ForestGreen),
       new SceneryDesc("rct2.scenery_small.tg19", 2, Colour.MossGreen),
       new SceneryDesc("rct2.scenery_small.tg19", 1, Colour.DarkGreen),
@@ -38,7 +37,20 @@ export abstract class BiomeFactory {
       new SceneryDesc("rct2.scenery_small.tg19", 2, Colour.Invisible)
     ];
 
-    const defaultBiome = new Biome(defaultBiomeDescs);
-    return [defaultBiome];
+    const desertBiome = <SceneryDesc[]>[
+      new SceneryDesc("rct2.scenery_small.tropt1", 1),
+      new SceneryDesc("rct2.scenery_small.tpm", 1),
+      new SceneryDesc("rct2.scenery_small.th2", 1),
+      new SceneryDesc("rct2.scenery_small.tjb1", 1),
+      new SceneryDesc("rct2ww.scenery_small.japsnotr", 1, undefined, 5),
+      new SceneryDesc("rct2.scenery_small.tsh4", 1),
+      new SceneryDesc("rct2.scenery_small.tg19", 1, Colour.DarkYellow),
+      new SceneryDesc("rct2.scenery_small.tg19", 2, Colour.Invisible)
+    ];
+
+    return [
+      new Biome(defaultBiome),
+      new Biome(desertBiome)
+    ];
   }
 }

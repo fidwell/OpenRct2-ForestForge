@@ -25,9 +25,17 @@ export class SelectionTool {
       filter: ["terrain"],
       onDown: a => down(this, a),
       onUp: a => up(this, a),
-      onMove: a => move(this, a),
-      onFinish: () => finish(this)
+      onMove: a => move(this, a)
     });
+  }
+
+  apply(): void {
+    finish(this);
+    this.cancel();
+  }
+
+  cancel(): void {
+    ui.tool?.cancel();
   }
 }
 
@@ -69,7 +77,6 @@ function move(tool: SelectionTool, args: ToolEventArgs): void {
 
 function finish(tool: SelectionTool): void {
   toggleGridOverlay(false);
-  ui.tileSelection.tiles = [];
 
   tool._selection.forEach((location: CoordsXY) => {
     const tileHere = map.getTile(location.x, location.y);
@@ -94,6 +101,7 @@ function finish(tool: SelectionTool): void {
   });
 
   tool._selection = [];
+  ui.tileSelection.tiles = [];
 }
 
 function placeObject(
