@@ -9,8 +9,7 @@ export class SelectionTool {
 
   constructor(
     readonly name: string,
-    readonly cursor: CursorType,
-    readonly biome: Biome) {
+    readonly cursor: CursorType) {
   }
 
   activate(): void {
@@ -29,14 +28,18 @@ export class SelectionTool {
     });
   }
 
-  apply(): void {
-    finish(this);
+  apply(biome: Biome): void {
+    finish(this, biome);
     this.cancel();
   }
 
   cancel(): void {
     ui.tool?.cancel();
+    if (this.onCancel)
+      this.onCancel();
   }
+
+  onCancel?: () => void;
 }
 
 function down(tool: SelectionTool, args: ToolEventArgs): void {
@@ -75,7 +78,7 @@ function move(tool: SelectionTool, args: ToolEventArgs): void {
   tool._selection = toggleTile(tool._selection, location, tool._isAddingToSelection);
 }
 
-function finish(tool: SelectionTool): void {
+function finish(tool: SelectionTool, biome: Biome): void {
   toggleGridOverlay(false);
 
   tool._selection.forEach((location: CoordsXY) => {
@@ -85,15 +88,15 @@ function finish(tool: SelectionTool): void {
 
     if (numberOfSelectedNeighbors <= 2) {
       MapUtilities.neighboredCorners(location, tool._selection).forEach((quadrant: number) => {
-        const treeHere = tool.biome.getTreeSmall();
+        const treeHere = biome.getTreeSmall();
         if (treeHere !== undefined) {
           placeObject(location, surface, treeHere, quadrant)
         }
       });
     } else {
       const treeHere = numberOfSelectedNeighbors >= 6
-        ? tool.biome.getTreeLarge()
-        : tool.biome.getTreeMedium();
+        ? biome.getTreeLarge()
+        : biome.getTreeMedium();
       if (treeHere !== undefined) {
         placeObject(location, surface, treeHere, 0);
       }

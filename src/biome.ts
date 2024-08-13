@@ -8,26 +8,32 @@ export default class Biome {
   constructor(sceneryDescs: SceneryDesc[]) {
     const allScenery = objectManager.getAllObjects("small_scenery");
     sceneryDescs.forEach((scenery: SceneryDesc) => {
-      const sceneryObjectMatches = allScenery.filter(s => s.identifier === scenery.identifier);
-      if (sceneryObjectMatches.length !== 1) {
-        console.log(`Scenery identifier ${scenery.identifier} could not be loaded.`);
-      }
-      const obj = sceneryObjectMatches[0];
-      scenery.index = obj.index;
-
-      const isFullTile = (obj.flags & 0x01) === 1;
-      const objHeight = (obj.height / 8) - (scenery.verticalOffset ?? 0);
-
-      if (isFullTile) {
-        if (objHeight > 10) {
-          this.largeObjects.push(scenery);
-        } else {
-          this.mediumObjects.push(scenery);
-        }
-      } else {
-        this.smallObjects.push(scenery);
-      }
+      this.applyScenery(allScenery, scenery);
     });
+  }
+
+  private applyScenery(allScenery: SmallSceneryObject[], scenery: SceneryDesc) {
+    const sceneryObjectMatches = allScenery.filter(s => s.identifier === scenery.identifier);
+    if (sceneryObjectMatches.length !== 1) {
+      console.log(`Scenery identifier ${scenery.identifier} could not be loaded.`);
+      return;
+    }
+
+    const obj = sceneryObjectMatches[0];
+    scenery.index = obj.index;
+
+    const isFullTile = (obj.flags & 0x01) === 1;
+    const objHeight = (obj.height / 8) - (scenery.verticalOffset ?? 0);
+
+    if (isFullTile) {
+      if (objHeight > 10) {
+        this.largeObjects.push(scenery);
+      } else {
+        this.mediumObjects.push(scenery);
+      }
+    } else {
+      this.smallObjects.push(scenery);
+    }
   }
 
   getTreeLarge(): SceneryDesc | undefined {
