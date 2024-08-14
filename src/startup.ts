@@ -5,6 +5,7 @@ import { SelectionTool } from "./selectionTool";
 let selectedBiome = 0;
 let activeTool: SelectionTool;
 const biomes = BiomeFactory.biomes();
+let isWindowOpen = false;
 
 let isActivated: boolean = false;
 const buttonText = store<string>("Activate tool");
@@ -47,6 +48,7 @@ const pluginWindow = window({
   ],
   onClose: () => {
     activeTool.cancel();
+    isWindowOpen = false;
   }
 });
 
@@ -57,6 +59,13 @@ function cancel() {
 
 export function startup() {
   if (typeof ui !== "undefined") {
-    ui.registerMenuItem("Forest Forge", () => pluginWindow.open());
+    ui.registerMenuItem("Forest Forge", () => {
+      if (isWindowOpen) {
+        pluginWindow.focus();
+      } else {
+        pluginWindow.open();
+        isWindowOpen = true;
+      }
+    });
   }
 }
