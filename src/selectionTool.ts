@@ -112,7 +112,6 @@ function placeObject(
   surface: SurfaceElement,
   sceneryDesc: SceneryDesc,
   quadrant: number) {
-  console.log(sceneryDesc.verticalOffset);
   const args = <SmallSceneryPlaceArgs>{
     x: location.x * 32,
     y: location.y * 32,

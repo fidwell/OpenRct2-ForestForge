@@ -15,12 +15,9 @@ export default class Biome {
     sceneryDescs = sceneryDescs.filter(s => s.object !== undefined);
 
     const heightCutoff = this.heightCutoff(sceneryDescs);
-    console.log(`cutoff: ${heightCutoff}`);
     sceneryDescs.forEach((scenery: SceneryDesc) => {
       this.applyScenery(scenery, heightCutoff);
     });
-
-    console.log(`${name}: ${this.largeObjects.length} large, ${this.mediumObjects.length} medium, ${this.smallObjects.length} small`);
   }
 
   private fillSceneryObject(scenery: SceneryDesc, allScenery: SmallSceneryObject[]): void {
@@ -38,7 +35,6 @@ export default class Biome {
       .filter(s => this.isFullTile(s.object))
       .map(s => s.effectiveHeight)
       .sort((a, b) => a - b);
-    console.log(JSON.stringify(objectHeights));
     return objectHeights[Math.ceil(objectHeights.length / 2)] ?? objectHeights[0];
   }
 
@@ -48,7 +44,6 @@ export default class Biome {
       return;
 
     if (this.isFullTile(obj)) {
-      console.log(`${scenery.object?.name}: ${scenery.effectiveHeight}`);
       if (scenery.effectiveHeight >= cutoff) {
         this.largeObjects.push(scenery);
       } else {
