@@ -112,10 +112,12 @@ function placeObject(
   surface: SurfaceElement,
   sceneryDesc: SceneryDesc,
   quadrant: number) {
+  // z should reference surface.clearanceHeight, but that
+  // currently results in intermittent crashing.
   const args = <SmallSceneryPlaceArgs>{
     x: location.x * 32,
     y: location.y * 32,
-    z: surface.clearanceZ - (8 * (sceneryDesc.verticalOffset ?? 0)),
+    z:  8 * (surface.baseHeight - (sceneryDesc.verticalOffset ?? 0)),
     direction: context.getRandom(0, 4),
     object: sceneryDesc.object?.index,
     quadrant: quadrant,
