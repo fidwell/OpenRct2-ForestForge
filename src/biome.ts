@@ -7,26 +7,40 @@ export default class Biome {
 
   constructor(sceneryDescs: SceneryDesc[]) {
     const allScenery = objectManager.getAllObjects("small_scenery");
+
+    sceneryDescs.forEach(s => {
+      this.fillSceneryObject(s, allScenery);
+    });
+
+    sceneryDescs = sceneryDescs.filter(s => s.object !== undefined);
+
+    const maxHeight = Math.max(...sceneryDescs.map(s => s.object?.height ?? 0));
+    const minHeight = Math.min(...sceneryDescs.map(s => s.object?.height ?? 0));
+    const cutoff = (maxHeight + minHeight) / 16;
+
     sceneryDescs.forEach((scenery: SceneryDesc) => {
-      this.applyScenery(allScenery, scenery);
+      this.applyScenery(scenery, cutoff);
     });
   }
 
-  private applyScenery(allScenery: SmallSceneryObject[], scenery: SceneryDesc) {
+  private fillSceneryObject(scenery: SceneryDesc, allScenery: SmallSceneryObject[]): void {
     const sceneryObjectMatches = allScenery.filter(s => s.identifier === scenery.identifier);
     if (sceneryObjectMatches.length !== 1) {
       console.log(`Scenery identifier ${scenery.identifier} could not be loaded.`);
-      return;
     }
+    scenery.object = sceneryObjectMatches[0];
+  }
 
-    const obj = sceneryObjectMatches[0];
-    scenery.index = obj.index;
+  private applyScenery(scenery: SceneryDesc, cutoff: number) {
+    const obj = scenery.object;
+    if (obj === undefined)
+      return;
 
     const isFullTile = (obj.flags & 0x01) === 1;
     const objHeight = (obj.height / 8) - (scenery.verticalOffset ?? 0);
 
     if (isFullTile) {
-      if (objHeight > 10) {
+      if (objHeight >= cutoff) {
         this.largeObjects.push(scenery);
       } else {
         this.mediumObjects.push(scenery);

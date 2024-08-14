@@ -1,7 +1,7 @@
 import { Colour } from "./colour";
 
 export default class SceneryDesc {
-  public index: number = 0;
+  public object: SmallSceneryObject | undefined;
 
   constructor(
     readonly identifier: string,

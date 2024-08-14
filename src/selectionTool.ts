@@ -83,7 +83,7 @@ function finish(tool: SelectionTool, biome: Biome): void {
 
   tool._selection.forEach((location: CoordsXY) => {
     const tileHere = map.getTile(location.x, location.y);
-    const surface = tileHere.elements.filter(e => e.type === "surface")[0];
+    const surface = tileHere.elements.filter(e => e.type === "surface")[0] as SurfaceElement;
     const numberOfSelectedNeighbors = MapUtilities.numberOfSelectedNeighbors(tileHere, tool._selection);
 
     if (numberOfSelectedNeighbors <= 2) {
@@ -109,17 +109,17 @@ function finish(tool: SelectionTool, biome: Biome): void {
 
 function placeObject(
   location: CoordsXY,
-  surface: TileElement,
-  object: SceneryDesc,
+  surface: SurfaceElement,
+  sceneryDesc: SceneryDesc,
   quadrant: number) {
   const args = <SmallSceneryPlaceArgs>{
     x: location.x * 32,
     y: location.y * 32,
-    z: 8 * (surface.clearanceHeight - (object.verticalOffset ?? 0)),
+    z: 8 * (surface.clearanceHeight - (sceneryDesc.verticalOffset ?? 0)),
     direction: context.getRandom(0, 4),
-    object: object.index,
+    object: sceneryDesc.object?.index,
     quadrant: quadrant,
-    primaryColour: object.primaryColour ?? 0,
+    primaryColour: sceneryDesc.primaryColour ?? 0,
     secondaryColour: 0,
     tertiaryColour: 0
   };
