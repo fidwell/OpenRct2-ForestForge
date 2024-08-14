@@ -15,4 +15,8 @@ export default class SceneryDesc {
         verticalOffset = 0;
       }
   }
+
+  public get effectiveHeight(): number {
+    return (this.object?.height ?? 0) / 8 - (this.verticalOffset ?? 0);
+  }
 }

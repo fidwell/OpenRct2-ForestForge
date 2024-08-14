@@ -5,7 +5,7 @@ export default class Biome {
   private mediumObjects: SceneryDesc[] = [];
   private smallObjects: SceneryDesc[] = [];
 
-  constructor(sceneryDescs: SceneryDesc[]) {
+  constructor(readonly name: string, sceneryDescs: SceneryDesc[]) {
     const allScenery = objectManager.getAllObjects("small_scenery");
 
     sceneryDescs.forEach(s => {
@@ -14,13 +14,13 @@ export default class Biome {
 
     sceneryDescs = sceneryDescs.filter(s => s.object !== undefined);
 
-    const maxHeight = Math.max(...sceneryDescs.map(s => s.object?.height ?? 0));
-    const minHeight = Math.min(...sceneryDescs.map(s => s.object?.height ?? 0));
-    const cutoff = (maxHeight + minHeight) / 16;
-
+    const heightCutoff = this.heightCutoff(sceneryDescs);
+    console.log(`cutoff: ${heightCutoff}`);
     sceneryDescs.forEach((scenery: SceneryDesc) => {
-      this.applyScenery(scenery, cutoff);
+      this.applyScenery(scenery, heightCutoff);
     });
+
+    console.log(`${name}: ${this.largeObjects.length} large, ${this.mediumObjects.length} medium, ${this.smallObjects.length} small`);
   }
 
   private fillSceneryObject(scenery: SceneryDesc, allScenery: SmallSceneryObject[]): void {
@@ -31,16 +31,25 @@ export default class Biome {
     scenery.object = sceneryObjectMatches[0];
   }
 
+  private heightCutoff(sceneryDescs: SceneryDesc[]) {
+    // Caculate what is "large" and what is "medium" by defining a cutoff
+    // point at the median height of all selected full-tile objects.
+    const objectHeights = sceneryDescs
+      .filter(s => this.isFullTile(s.object))
+      .map(s => s.effectiveHeight)
+      .sort((a, b) => a - b);
+    console.log(JSON.stringify(objectHeights));
+    return objectHeights[Math.ceil(objectHeights.length / 2)] ?? objectHeights[0];
+  }
+
   private applyScenery(scenery: SceneryDesc, cutoff: number) {
     const obj = scenery.object;
     if (obj === undefined)
       return;
 
-    const isFullTile = (obj.flags & 0x01) === 1;
-    const objHeight = (obj.height / 8) - (scenery.verticalOffset ?? 0);
-
-    if (isFullTile) {
-      if (objHeight >= cutoff) {
+    if (this.isFullTile(obj)) {
+      console.log(`${scenery.object?.name}: ${scenery.effectiveHeight}`);
+      if (scenery.effectiveHeight >= cutoff) {
         this.largeObjects.push(scenery);
       } else {
         this.mediumObjects.push(scenery);
@@ -48,6 +57,10 @@ export default class Biome {
     } else {
       this.smallObjects.push(scenery);
     }
+  }
+
+  private isFullTile(obj: SmallSceneryObject | undefined): boolean {
+    return obj === undefined ? false : (obj.flags & 0x01) === 1;
   }
 
   getTreeLarge(): SceneryDesc | undefined {

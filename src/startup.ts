@@ -15,7 +15,7 @@ const pluginWindow = window({
   height: 105,
   content: [
     dropdown({
-      items: ["Default", "Desert"],
+      items: biomes.map(b => b.name),
       onChange: (index: number) => {
         selectedBiome = index;
       }

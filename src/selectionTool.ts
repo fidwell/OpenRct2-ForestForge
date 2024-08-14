@@ -86,7 +86,7 @@ function finish(tool: SelectionTool, biome: Biome): void {
     const surface = tileHere.elements.filter(e => e.type === "surface")[0] as SurfaceElement;
     const numberOfSelectedNeighbors = MapUtilities.numberOfSelectedNeighbors(tileHere, tool._selection);
 
-    if (numberOfSelectedNeighbors <= 2) {
+    if (numberOfSelectedNeighbors <= 4) {
       MapUtilities.neighboredCorners(location, tool._selection).forEach((quadrant: number) => {
         const treeHere = biome.getTreeSmall();
         if (treeHere !== undefined) {
@@ -94,7 +94,7 @@ function finish(tool: SelectionTool, biome: Biome): void {
         }
       });
     } else {
-      const treeHere = numberOfSelectedNeighbors >= 6
+      const treeHere = numberOfSelectedNeighbors >= 7
         ? biome.getTreeLarge()
         : biome.getTreeMedium();
       if (treeHere !== undefined) {
