@@ -112,10 +112,11 @@ function placeObject(
   surface: SurfaceElement,
   sceneryDesc: SceneryDesc,
   quadrant: number) {
+  console.log(sceneryDesc.verticalOffset);
   const args = <SmallSceneryPlaceArgs>{
     x: location.x * 32,
     y: location.y * 32,
-    z: 8 * (surface.clearanceHeight - (sceneryDesc.verticalOffset ?? 0)),
+    z: surface.clearanceZ - (8 * (sceneryDesc.verticalOffset ?? 0)),
     direction: context.getRandom(0, 4),
     object: sceneryDesc.object?.index,
     quadrant: quadrant,
