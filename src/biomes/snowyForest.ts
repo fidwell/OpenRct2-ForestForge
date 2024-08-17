@@ -3,10 +3,10 @@ import { Colour } from "../colour";
 import SceneryDesc from "../sceneryDesc";
 
 export const snowyForest = new Biome("Snowy forest", <SceneryDesc[]>[
-  new SceneryDesc("rct2.scenery_small.tns3", 1),
-  new SceneryDesc("rct2.scenery_small.tns3", 1, undefined, 4),
-  new SceneryDesc("rct2.scenery_small.tns3", 1, undefined, 5),
-  new SceneryDesc("rct2.scenery_small.tns3", 1, undefined, 6),
+  new SceneryDesc("rct2.scenery_small.tnss", 1),
+  new SceneryDesc("rct2.scenery_small.tnss", 1, undefined, 4),
+  new SceneryDesc("rct2.scenery_small.tnss", 1, undefined, 5),
+  new SceneryDesc("rct2.scenery_small.tnss", 1, undefined, 6),
   new SceneryDesc("rct2.scenery_small.trfs", 1),
   new SceneryDesc("rct2.scenery_small.trfs", 1, undefined, 4),
   new SceneryDesc("rct2.scenery_small.trfs", 1, undefined, 5),
