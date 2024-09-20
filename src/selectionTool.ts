@@ -83,14 +83,19 @@ function finish(tool: SelectionTool, biome: Biome): void {
 
   tool._selection.forEach((location: CoordsXY) => {
     const tileHere = map.getTile(location.x, location.y);
-    const surface = tileHere.elements.filter(e => e.type === "surface")[0] as SurfaceElement;
+    const surfaces = tileHere.elements.filter(e => e.type === "surface");
+    if (surfaces.length !== 1) {
+      console.log("Found either no surfaces or more than one.");
+      return;
+    }
+    const surfaceHeight = surfaces[0].clearanceHeight;
     const numberOfSelectedNeighbors = MapUtilities.numberOfSelectedNeighbors(tileHere, tool._selection);
 
     if (numberOfSelectedNeighbors <= 4) {
       MapUtilities.neighboredCorners(location, tool._selection).forEach((quadrant: number) => {
         const treeHere = biome.getTreeSmall();
         if (treeHere !== undefined) {
-          placeObject(location, surface, treeHere, quadrant)
+          placeObject(location, surfaceHeight, treeHere, quadrant)
         }
       });
     } else {
@@ -98,7 +103,7 @@ function finish(tool: SelectionTool, biome: Biome): void {
         ? biome.getTreeLarge()
         : biome.getTreeMedium();
       if (treeHere !== undefined) {
-        placeObject(location, surface, treeHere, 0);
+        placeObject(location, surfaceHeight, treeHere, 0);
       }
     }
   });
@@ -109,15 +114,13 @@ function finish(tool: SelectionTool, biome: Biome): void {
 
 function placeObject(
   location: CoordsXY,
-  surface: SurfaceElement,
+  surfaceHeight: number,
   sceneryDesc: SceneryDesc,
   quadrant: number) {
-  // z should reference surface.clearanceHeight, but that
-  // currently results in intermittent crashing.
   const args = <SmallSceneryPlaceArgs>{
     x: location.x * 32,
     y: location.y * 32,
-    z:  8 * (surface.baseHeight - (sceneryDesc.verticalOffset ?? 0)),
+    z:  8 * (surfaceHeight - (sceneryDesc.verticalOffset ?? 0)),
     direction: context.getRandom(0, 4),
     object: sceneryDesc.object?.index,
     quadrant: quadrant,
