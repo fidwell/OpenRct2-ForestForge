@@ -8,6 +8,6 @@ registerPlugin({
   authors: ["fidwell"],
   type: "remote",
   licence: "MIT",
-  targetApiVersion: 98,
+  targetApiVersion: 99,
   main: startup,
 });
