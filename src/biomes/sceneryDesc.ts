@@ -19,9 +19,4 @@ export default class SceneryDesc {
   public get effectiveHeight(): number {
     return (this.object?.height ?? 0) / 8 - (this.verticalOffset ?? 0);
   }
-
-  public get basicIdentifier(): string {
-    const parts = this.identifier.split(".");
-    return parts[parts.length - 1];
-  }
 }

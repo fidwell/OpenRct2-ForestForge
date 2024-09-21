@@ -2,6 +2,9 @@ import { button, Colour, colourPicker, groupbox, horizontal, label, listview, sp
 import Biome from "../biomes/biome";
 import { BiomeFactory } from "../biomes/biomeFactory";
 import { BiomeType } from "../biomes/BiomeType";
+import SceneryDesc from "../biomes/sceneryDesc";
+import identifierHelper from "../helpers/identifierHelper";
+import StorageService from "../services/storageService";
 import { WindowTab } from "./windowTab";
 
 export class BiomeList extends WindowTab {
@@ -9,11 +12,13 @@ export class BiomeList extends WindowTab {
   private buttonSize = 24;
 
   private selectedBiome = store<Biome>(this.biomes[0]);
+  private selectedBiomeIndex = 0;
   private noBiomeSelected = store<boolean>(true);
   private selectedBiomeIsBuiltIn = store<boolean>(true);
   private objects = store<string[][]>([]);
 
   private entryDisabled = store<boolean>(true);
+  private selectedObjectIndex = 0;
   private selectedObjectIdentifier = store<string>("");
   private selectedObjectWeight = store<number>(0);
   private selectedObjectVoffset = store<number>(0);
@@ -66,9 +71,11 @@ export class BiomeList extends WindowTab {
         ]),
         canSelect: true,
         isStriped: true,
-        onClick: (item, _) => {
-          this.selectedBiome.set(this.biomes[item]);
-          this.selectedBiomeIsBuiltIn.set(this.biomes[item].type === BiomeType.BuiltIn);
+        onClick: (index, _) => {
+          const biome = this.biomes[index];
+          this.selectedBiome.set(biome);
+          this.selectedBiomeIndex = index;
+          this.selectedBiomeIsBuiltIn.set(biome.type === BiomeType.BuiltIn);
           this.noBiomeSelected.set(false);
           // Clear preivously-selected object details
           this.entryDisabled.set(true);
@@ -84,8 +91,8 @@ export class BiomeList extends WindowTab {
         content: [
           listview({
             columns: [{
-                header: "#",
-                width: 0
+              header: "#",
+              width: 0
             }, {
               header: "Identifier",
               width: 80,
@@ -105,13 +112,14 @@ export class BiomeList extends WindowTab {
             disabled: this.selectedBiomeIsBuiltIn,
             canSelect: true,
             isStriped: true,
-            onClick: (item: number, _) => {
+            onClick: (indexStr: number, _) => {
               if (this.selectedBiomeIsBuiltIn.get())
                 return;
 
-              const index = this.objects.get()[item][0];
+              const index = Number(this.objects.get()[indexStr][0]);
               const object = this.selectedBiome.get().objects[Number(index)];
               this.entryDisabled.set(false);
+              this.selectedObjectIndex = index;
               this.selectedObjectIdentifier.set(object.identifier);
               this.selectedObjectWeight.set(object.weight);
               this.selectedObjectVoffset.set(object.verticalOffset ?? 0);
@@ -161,7 +169,11 @@ export class BiomeList extends WindowTab {
                     minimum: 1,
                     maximum: 9,
                     value: this.selectedObjectWeight,
-                    disabled: this.entryDisabled
+                    disabled: this.entryDisabled,
+                    onChange: (weight: number) => {
+                      this.selectedObjectWeight.set(weight);
+                      this.saveBiome();
+                    }
                   })
                 ]
               }),
@@ -172,10 +184,14 @@ export class BiomeList extends WindowTab {
                     disabled: this.entryDisabled
                   }),
                   spinner({
-                    minimum: 1,
+                    minimum: 0,
                     maximum: 9,
                     value: this.selectedObjectVoffset,
-                    disabled: this.entryDisabled
+                    disabled: this.entryDisabled,
+                    onChange: (vOffset: number) => {
+                      this.selectedObjectVoffset.set(vOffset);
+                      this.saveBiome();
+                    }
                   })
                 ]
               }),
@@ -187,7 +203,11 @@ export class BiomeList extends WindowTab {
                   }),
                   colourPicker({
                     colour: this.selectedObjectColour,
-                    disabled: this.entryDisabled
+                    disabled: this.entryDisabled,
+                    onChange: (colour: Colour) => {
+                      this.selectedObjectColour.set(colour);
+                      this.saveBiome();
+                    }
                   })
                 ]
               })
@@ -198,14 +218,28 @@ export class BiomeList extends WindowTab {
     ];
 
     this.selectedBiome.subscribe((b) => {
-      const objectArray = b.objects.map((o, i) => [
+      const objectArray = b.objects.map((o: SceneryDesc, i: number) => [
         i.toString(),
-        o.basicIdentifier,
+        identifierHelper(o.identifier),
         o.verticalOffset?.toString() ?? "",
         o.weight.toString(),
         o.primaryColour ? Colour[o.primaryColour] : ""
       ]);
       this.objects.set(objectArray);
     });
+  }
+
+  private saveBiome() {
+    const selectedBiome = this.selectedBiome.get();
+    const selectedObject = selectedBiome.objects[this.selectedObjectIndex];
+    selectedBiome.objects[this.selectedObjectIndex] = new SceneryDesc(
+      selectedObject.identifier,
+      this.selectedObjectWeight?.get(),
+      this.selectedObjectColour?.get(),
+      this.selectedObjectVoffset?.get());
+    StorageService.storePalette(selectedBiome);
+    this.biomes = BiomeFactory.biomes();
+    this.selectedBiome.set(new Biome("", [])); // force list refresh
+    this.selectedBiome.set(this.biomes[this.selectedBiomeIndex]);
   }
 }
