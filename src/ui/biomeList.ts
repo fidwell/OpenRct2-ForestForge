@@ -32,7 +32,7 @@ export class BiomeList extends WindowTab {
       frameDuration: 4,
     } as ImageAnimation;
     this.width = 350;
-    this.height = 420;
+    this.height = 480;
     this.content = [
       horizontal([
         button({
@@ -147,15 +147,26 @@ export class BiomeList extends WindowTab {
                     image: "copy",
                     width: this.buttonSize,
                     height: this.buttonSize,
-                    tooltip: "Copy selected object",
-                    disabled: this.entryDisabled
+                    tooltip: "Duplicate selected object",
+                    disabled: this.entryDisabled,
+                    onClick: () => {
+                      const biome = this.selectedBiome.get();
+                      const object = biome.objects[this.selectedObjectIndex];
+                      biome.objects.push(object);
+                      this.saveBiome(biome);
+                    }
                   }),
                   button({
                     image: "demolish",
                     width: this.buttonSize,
                     height: this.buttonSize,
                     tooltip: "Delete selected object",
-                    disabled: this.entryDisabled
+                    disabled: this.entryDisabled,
+                    onClick: () => {
+                      const biome = this.selectedBiome.get();
+                      biome.objects.splice(this.selectedObjectIndex, 1);
+                      this.saveBiome(biome);
+                    }
                   })
                 ]
               }),
@@ -172,7 +183,7 @@ export class BiomeList extends WindowTab {
                     disabled: this.entryDisabled,
                     onChange: (weight: number) => {
                       this.selectedObjectWeight.set(weight);
-                      this.saveBiome();
+                      this.saveObject();
                     }
                   })
                 ]
@@ -190,7 +201,7 @@ export class BiomeList extends WindowTab {
                     disabled: this.entryDisabled,
                     onChange: (vOffset: number) => {
                       this.selectedObjectVoffset.set(vOffset);
-                      this.saveBiome();
+                      this.saveObject();
                     }
                   })
                 ]
@@ -206,7 +217,7 @@ export class BiomeList extends WindowTab {
                     disabled: this.entryDisabled,
                     onChange: (colour: Colour) => {
                       this.selectedObjectColour.set(colour);
-                      this.saveBiome();
+                      this.saveObject();
                     }
                   })
                 ]
@@ -229,7 +240,14 @@ export class BiomeList extends WindowTab {
     });
   }
 
-  private saveBiome() {
+  private saveBiome(selectedBiome: Biome) {
+    StorageService.storePalette(selectedBiome);
+    this.biomes = BiomeFactory.biomes();
+    this.selectedBiome.set(new Biome("", [])); // force list refresh
+    this.selectedBiome.set(this.biomes[this.selectedBiomeIndex]);
+  }
+
+  private saveObject() {
     const selectedBiome = this.selectedBiome.get();
     const selectedObject = selectedBiome.objects[this.selectedObjectIndex];
     selectedBiome.objects[this.selectedObjectIndex] = new SceneryDesc(
@@ -237,9 +255,6 @@ export class BiomeList extends WindowTab {
       this.selectedObjectWeight?.get(),
       this.selectedObjectColour?.get(),
       this.selectedObjectVoffset?.get());
-    StorageService.storePalette(selectedBiome);
-    this.biomes = BiomeFactory.biomes();
-    this.selectedBiome.set(new Biome("", [])); // force list refresh
-    this.selectedBiome.set(this.biomes[this.selectedBiomeIndex]);
+    this.saveBiome(selectedBiome);
   }
 }

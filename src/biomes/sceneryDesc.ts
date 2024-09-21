@@ -6,8 +6,8 @@ export default class SceneryDesc {
   constructor(
     readonly identifier: string,
     readonly weight: number,
-    readonly primaryColour?: Colour,
-    readonly verticalOffset?: number) {
+    readonly primaryColour: Colour = Colour.Invisible,
+    readonly verticalOffset: number = 0) {
       if (primaryColour === undefined) {
         primaryColour = Colour.GrassGreenDark;
       }
