@@ -11,8 +11,8 @@ export class BiomeList extends WindowTab {
   private biomes: Biome[] = BiomeFactory.biomes();
   private buttonSize = 24;
 
-  private selectedBiome = store<Biome>(this.biomes[0]);
-  private selectedBiomeIndex = 0;
+  private selectedBiome = store<Biome>(new Biome("", []));
+  private selectedBiomeIndex = -1;
   private noBiomeSelected = store<boolean>(true);
   private selectedBiomeIsBuiltIn = store<boolean>(true);
   private objects = store<string[][]>([]);
