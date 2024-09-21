@@ -1,4 +1,5 @@
-import Biome, { BiomeType } from "../biome";
+import Biome from "../biomes/biome";
+import { BiomeType } from "../biomes/BiomeType";
 import { defaultBiome } from "../presets/defaultBiome";
 
 const pluginNamespace = "ForestForge";

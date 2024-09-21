@@ -1,6 +1,6 @@
-import Biome from "./biome";
+import Biome from "./biomes/biome";
 import { MapUtilities } from "./mapUtilities";
-import SceneryDesc from "./sceneryDesc";
+import apply from "./services/applier";
 
 export class SelectionTool {
   _isDragging = false;
@@ -80,60 +80,9 @@ function move(tool: SelectionTool, args: ToolEventArgs): void {
 
 function finish(tool: SelectionTool, biome: Biome): void {
   toggleGridOverlay(false);
-
-  tool._selection.forEach((location: CoordsXY) => {
-    const tileHere = map.getTile(location.x, location.y);
-    const surfaces = tileHere.elements.filter(e => e.type === "surface");
-    if (surfaces.length !== 1) {
-      console.log("Found either no surfaces or more than one.");
-      return;
-    }
-    const surfaceHeight = surfaces[0].clearanceHeight;
-    const numberOfSelectedNeighbors = MapUtilities.numberOfSelectedNeighbors(tileHere, tool._selection);
-
-    if (numberOfSelectedNeighbors <= 4) {
-      MapUtilities.neighboredCorners(location, tool._selection).forEach((quadrant: number) => {
-        const treeHere = biome.getTreeSmall();
-        if (treeHere !== undefined) {
-          placeObject(location, surfaceHeight, treeHere, quadrant)
-        }
-      });
-    } else {
-      const treeHere = numberOfSelectedNeighbors >= 7
-        ? biome.getTreeLarge()
-        : biome.getTreeMedium();
-      if (treeHere !== undefined) {
-        placeObject(location, surfaceHeight, treeHere, 0);
-      }
-    }
-  });
-
+  apply(tool, biome);
   tool._selection = [];
   ui.tileSelection.tiles = [];
-}
-
-function placeObject(
-  location: CoordsXY,
-  surfaceHeight: number,
-  sceneryDesc: SceneryDesc,
-  quadrant: number) {
-  const args = <SmallSceneryPlaceArgs>{
-    x: location.x * 32,
-    y: location.y * 32,
-    z:  8 * (surfaceHeight - (sceneryDesc.verticalOffset ?? 0)),
-    direction: context.getRandom(0, 4),
-    object: sceneryDesc.object?.index,
-    quadrant: quadrant,
-    primaryColour: sceneryDesc.primaryColour ?? 0,
-    secondaryColour: 0,
-    tertiaryColour: 0
-  };
-
-  context.queryAction("smallsceneryplace", args, (result: GameActionResult) => {
-    if (result.error === undefined || result.error === 0) {
-      context.executeAction("smallsceneryplace", args);
-    }
-  });
 }
 
 function toggleTile(collection: CoordsXY[], location: CoordsXY, isAdding: boolean): CoordsXY[] {

@@ -1,17 +1,16 @@
 import { button, dropdown, store } from "openrct2-flexui";
-import { BiomeFactory } from "../biomeFactory";
+import { BiomeFactory } from "../biomes/biomeFactory";
 import { SelectionTool } from "../selectionTool";
 import { WindowTab } from "./windowTab";
 
+let selectedBiome = 0;
+let activeTool: SelectionTool | undefined = undefined;
+let isActivated: boolean = false;
+
+const biomes = BiomeFactory.biomes();
+const buttonText = store<string>("Activate tool");
 
 export class ToolActivator extends WindowTab {
-  selectedBiome = 0;
-  activeTool: SelectionTool | undefined = undefined;
-  biomes = BiomeFactory.biomes();
-
-  isActivated: boolean = false;
-  buttonText = store<string>("Activate tool");
-
   constructor() {
     super();
     this.image = "scenery_trees";
@@ -19,23 +18,23 @@ export class ToolActivator extends WindowTab {
     this.height = 140;
     this.content = [
       dropdown({
-        items: this.biomes.map(b => b.name),
+        items: biomes.map(b => b.name),
         onChange: (index: number) => {
-          this.selectedBiome = index;
+          selectedBiome = index;
         }
       }),
       button({
-        text: this.buttonText,
+        text: buttonText,
         height: "28px",
         onClick: () => {
-          if (this.isActivated) {
-            this.activeTool?.cancel();
+          if (isActivated) {
+            activeTool?.cancel();
           } else {
-            this.activeTool = new SelectionTool("forestForge", "tree_down");
-            this.activeTool.onCancel = this.cancel;
-            this.activeTool.activate();
-            this.buttonText.set("Cancel");
-            this.isActivated = true;
+            activeTool = new SelectionTool("forestForge", "tree_down");
+            activeTool.onCancel = this.cancel;
+            activeTool.activate();
+            buttonText.set("Cancel");
+            isActivated = true;
           }
         }
       }),
@@ -43,16 +42,16 @@ export class ToolActivator extends WindowTab {
         text: "Apply",
         height: "28px",
         onClick: () => {
-          this.activeTool?.apply(this.biomes[this.selectedBiome]);
-          this.buttonText.set("Activate tool");
-          this.isActivated = false;
+          activeTool?.apply(biomes[selectedBiome]);
+          buttonText.set("Activate tool");
+          isActivated = false;
         }
       })
     ];
   }
 
   private cancel() {
-    this.isActivated = false;
-    this.buttonText.set("Activate tool");
+    isActivated = false;
+    buttonText.set("Activate tool");
   }
 }

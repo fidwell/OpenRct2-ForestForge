@@ -1,6 +1,7 @@
 import { button, Colour, colourPicker, groupbox, horizontal, label, listview, spinner, store, vertical } from "openrct2-flexui";
-import Biome, { BiomeType } from "../biome";
-import { BiomeFactory } from "../biomeFactory";
+import Biome from "../biomes/biome";
+import { BiomeFactory } from "../biomes/biomeFactory";
+import { BiomeType } from "../biomes/BiomeType";
 import { WindowTab } from "./windowTab";
 
 export class BiomeList extends WindowTab {
@@ -109,7 +110,7 @@ export class BiomeList extends WindowTab {
                 return;
 
               const index = this.objects.get()[item][0];
-              const object = this.selectedBiome.get().allObjects[Number(index)];
+              const object = this.selectedBiome.get().objects[Number(index)];
               this.entryDisabled.set(false);
               this.selectedObjectIdentifier.set(object.identifier);
               this.selectedObjectWeight.set(object.weight);
@@ -197,7 +198,7 @@ export class BiomeList extends WindowTab {
     ];
 
     this.selectedBiome.subscribe((b) => {
-      const objectArray = b.allObjects.map((o, i) => [
+      const objectArray = b.objects.map((o, i) => [
         i.toString(),
         o.basicIdentifier,
         o.verticalOffset?.toString() ?? "",
