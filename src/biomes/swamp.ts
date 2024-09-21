@@ -1,5 +1,5 @@
+import { Colour } from "openrct2-flexui";
 import Biome from "../biome";
-import { Colour } from "../colour";
 import SceneryDesc from "../sceneryDesc";
 
 export const swamp = new Biome("Swamp", <SceneryDesc[]>[
@@ -17,7 +17,7 @@ export const swamp = new Biome("Swamp", <SceneryDesc[]>[
   new SceneryDesc("rct2.scenery_small.tjb2", 1),
   new SceneryDesc("rct2.scenery_small.tjb3", 1),
   new SceneryDesc("rct2.scenery_small.tce", 1, undefined, 4),
-  new SceneryDesc("rct2.scenery_small.tg19", 4, Colour.ForestGreen),
-  new SceneryDesc("rct2.scenery_small.tg19", 2, Colour.Umber),
+  new SceneryDesc("rct2.scenery_small.tg19", 4, Colour.GrassGreenDark),
+  new SceneryDesc("rct2.scenery_small.tg19", 2, Colour.DullBrownDark),
   new SceneryDesc("rct2.scenery_small.tg19", 2, Colour.Invisible)
 ]);

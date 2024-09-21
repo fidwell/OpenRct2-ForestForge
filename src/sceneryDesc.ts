@@ -1,4 +1,4 @@
-import { Colour } from "./colour";
+import { Colour } from "openrct2-flexui";
 
 export default class SceneryDesc {
   public object: SmallSceneryObject | undefined;
@@ -9,7 +9,7 @@ export default class SceneryDesc {
     readonly primaryColour?: Colour,
     readonly verticalOffset?: number) {
       if (primaryColour === undefined) {
-        primaryColour = Colour.ForestGreen;
+        primaryColour = Colour.GrassGreenDark;
       }
       if (verticalOffset === undefined) {
         verticalOffset = 0;

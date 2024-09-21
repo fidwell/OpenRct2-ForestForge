@@ -1,5 +1,5 @@
+import { Colour } from "openrct2-flexui";
 import Biome from "../biome";
-import { Colour } from "../colour";
 import SceneryDesc from "../sceneryDesc";
 
 export const coniferousForest = new Biome("Coniferous forest", <SceneryDesc[]>[
@@ -21,7 +21,7 @@ export const coniferousForest = new Biome("Coniferous forest", <SceneryDesc[]>[
   new SceneryDesc("rct2.scenery_small.tsh0", 4),
   new SceneryDesc("rct2.scenery_small.tsh1", 7),
   new SceneryDesc("rct2.scenery_small.tsh4", 8),
-  new SceneryDesc("rct2.scenery_small.tg19", 8, Colour.ForestGreen),
+  new SceneryDesc("rct2.scenery_small.tg19", 8, Colour.GrassGreenDark),
   new SceneryDesc("rct2.scenery_small.tg19", 3, Colour.Invisible),
   new SceneryDesc("rct2.scenery_small.tg19", 1, Colour.BordeauxRed)
 ]);
