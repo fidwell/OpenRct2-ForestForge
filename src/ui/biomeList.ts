@@ -1,5 +1,5 @@
 import { button, Colour, colourPicker, groupbox, horizontal, label, listview, spinner, store, vertical } from "openrct2-flexui";
-import Biome from "../biome";
+import Biome, { BiomeType } from "../biome";
 import { BiomeFactory } from "../biomeFactory";
 import { WindowTab } from "./windowTab";
 
@@ -8,6 +8,8 @@ export class BiomeList extends WindowTab {
   private buttonSize = 24;
 
   private selectedBiome = store<Biome>(this.biomes[0]);
+  private noBiomeSelected = store<boolean>(true);
+  private selectedBiomeIsBuiltIn = store<boolean>(true);
   private objects = store<string[][]>([]);
 
   private entryDisabled = store<boolean>(true);
@@ -34,28 +36,39 @@ export class BiomeList extends WindowTab {
           tooltip: "Create new palette"
         }),
         button({
+          image: "rename",
+          width: this.buttonSize,
+          height: this.buttonSize,
+          tooltip: "Rename selected palette",
+          disabled: this.selectedBiomeIsBuiltIn
+        }),
+        button({
           image: "copy",
           width: this.buttonSize,
           height: this.buttonSize,
-          tooltip: "Copy selected palette"
+          tooltip: "Copy selected palette",
+          disabled: this.noBiomeSelected
         }),
         button({
           image: "demolish",
           width: this.buttonSize,
           height: this.buttonSize,
-          tooltip: "Delete selected palette"
+          tooltip: "Delete selected palette",
+          disabled: this.selectedBiomeIsBuiltIn
         })
       ]),
       listview({
         columns: ["Name", "Type"],
         items: this.biomes.map(b => [
           b.name,
-          "Built-in"
+          BiomeType[b.type]
         ]),
         canSelect: true,
         isStriped: true,
         onClick: (item, _) => {
           this.selectedBiome.set(this.biomes[item]);
+          this.selectedBiomeIsBuiltIn.set(this.biomes[item].type === BiomeType.BuiltIn);
+          this.noBiomeSelected.set(false);
           // Clear preivously-selected object details
           this.entryDisabled.set(true);
           this.selectedObjectIdentifier.set("");
@@ -66,6 +79,7 @@ export class BiomeList extends WindowTab {
       }),
       groupbox({
         text: "Edit palette",
+        disabled: this.selectedBiomeIsBuiltIn,
         content: [
           listview({
             columns: [{
@@ -87,9 +101,13 @@ export class BiomeList extends WindowTab {
               width: 25
             }],
             items: this.objects,
+            disabled: this.selectedBiomeIsBuiltIn,
             canSelect: true,
             isStriped: true,
             onClick: (item: number, _) => {
+              if (this.selectedBiomeIsBuiltIn.get())
+                return;
+
               const index = this.objects.get()[item][0];
               const object = this.selectedBiome.get().allObjects[Number(index)];
               this.entryDisabled.set(false);

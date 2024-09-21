@@ -1,12 +1,20 @@
 import SceneryDesc from "./sceneryDesc";
 
+export enum BiomeType {
+  BuiltIn,
+  Custom
+}
+
 export default class Biome {
   private largeObjects: SceneryDesc[] = [];
   private mediumObjects: SceneryDesc[] = [];
   private smallObjects: SceneryDesc[] = [];
 
+  public type: BiomeType;
+
   constructor(readonly name: string, sceneryDescs: SceneryDesc[]) {
     const allScenery = objectManager.getAllObjects("small_scenery");
+    this.type = BiomeType.BuiltIn;
 
     sceneryDescs.forEach(s => {
       this.fillSceneryObject(s, allScenery);
