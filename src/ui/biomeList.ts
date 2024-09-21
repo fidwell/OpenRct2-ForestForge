@@ -1,6 +1,7 @@
 import { button, groupbox, horizontal, listview, store } from "openrct2-flexui";
 import Biome from "../biome";
 import { BiomeFactory } from "../biomeFactory";
+import { Colour } from "../colour";
 import { WindowTab } from "./windowTab";
 
 export class BiomeList extends WindowTab {
@@ -17,8 +18,8 @@ export class BiomeList extends WindowTab {
       frameCount: 7,
       frameDuration: 4,
     } as ImageAnimation;
-    this.width = 250;
-    this.height = 300;
+    this.width = 350;
+    this.height = 350;
     this.content = [
       horizontal([
         button({
@@ -58,16 +59,18 @@ export class BiomeList extends WindowTab {
           listview({
             columns: [{
               header: "Identifier",
-              width: 150,
+              width: 80,
               canSort: true
             }, {
-              header: "Size",
+              header: "V-offset",
+              width: 60
+            }, {
+              header: "Weight",
               width: 40,
               canSort: true
             }, {
-              header: "Weight",
-              width: 25,
-              canSort: true
+              header: "Colour",
+              width: 25
             }],
             items: this.objects,
             canSelect: false,
@@ -79,9 +82,10 @@ export class BiomeList extends WindowTab {
 
     this.selectedBiome.subscribe((b) => {
       const objectArray = b.allObjects.map(o => [
-        o.identifier,
-        "todo",
-        o.weight.toString()
+        o.basicIdentifier,
+        o.verticalOffset?.toString() ?? "",
+        o.weight.toString(),
+        o.primaryColour ? Colour[o.primaryColour] : ""
       ]);
       this.objects.set(objectArray);
     });
