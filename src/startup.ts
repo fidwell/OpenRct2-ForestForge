@@ -1,7 +1,7 @@
 import { tabwindow } from "openrct2-flexui";
 import { SelectionTool } from "./selectionTool";
-import { BiomeList } from "./tabs/biomeList";
-import { ToolActivator } from "./tabs/toolActivator";
+import { BiomeList } from "./ui/biomeList";
+import { ToolActivator } from "./ui/toolActivator";
 
 let activeTool: SelectionTool;
 let isWindowOpen = false;
