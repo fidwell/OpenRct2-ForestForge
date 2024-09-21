@@ -1,14 +1,14 @@
-import { button, horizontal, listview, WindowTemplate } from "openrct2-flexui";
+import { button, groupbox, horizontal, listview, store } from "openrct2-flexui";
 import Biome from "../biome";
 import { BiomeFactory } from "../biomeFactory";
-import * as editWindow from "./editWindow";
 import { WindowTab } from "./windowTab";
 
 export class BiomeList extends WindowTab {
-  private biomes: Biome[];
+  private biomes: Biome[] = BiomeFactory.biomes();
   private buttonSize = 24;
 
-  private editorWindow: WindowTemplate | undefined = undefined;
+  private selectedBiome = store<Biome>(this.biomes[0]);
+  private objects = store<string[][]>([]);
 
   constructor() {
     super();
@@ -18,8 +18,7 @@ export class BiomeList extends WindowTab {
       frameDuration: 4,
     } as ImageAnimation;
     this.width = 250;
-    this.height = 200;
-    this.biomes = BiomeFactory.biomes();
+    this.height = 300;
     this.content = [
       horizontal([
         button({
@@ -48,17 +47,43 @@ export class BiomeList extends WindowTab {
           "Built-in"
         ]),
         canSelect: true,
-        onClick: (item, number) => {
-          if (this.editorWindow) {
-            this.editorWindow?.close();
-          }
-
-          this.editorWindow = editWindow.create(this.biomes[item]);
-          this.editorWindow.open();
-
-          console.log(`row: ${item}, column: ${number}`);
+        isStriped: true,
+        onClick: (item, _) => {
+          this.selectedBiome.set(this.biomes[item]);
         }
+      }),
+      groupbox({
+        text: "Edit",
+        content: [
+          listview({
+            columns: [{
+              header: "Identifier",
+              width: 150,
+              canSort: true
+            }, {
+              header: "Size",
+              width: 40,
+              canSort: true
+            }, {
+              header: "Weight",
+              width: 25,
+              canSort: true
+            }],
+            items: this.objects,
+            canSelect: false,
+            isStriped: true
+          })
+        ]
       })
     ];
+
+    this.selectedBiome.subscribe((b) => {
+      const objectArray = b.allObjects.map(o => [
+        o.identifier,
+        "todo",
+        o.weight.toString()
+      ]);
+      this.objects.set(objectArray);
+    });
   }
 }

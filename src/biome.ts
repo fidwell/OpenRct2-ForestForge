@@ -94,4 +94,8 @@ export default class Biome {
 
     return list[list.length - 1];
   }
+
+  public get allObjects(): SceneryDesc[] {
+    return [...this.largeObjects, ...this.mediumObjects, ...this.smallObjects];
+  }
 }
