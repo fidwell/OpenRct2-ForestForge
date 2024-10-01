@@ -1,6 +1,6 @@
 import Biome from "./biomes/biome";
 import { MapUtilities } from "./mapUtilities";
-import apply from "./services/applier";
+import fillSelectionWithScenery from "./services/selectionFiller";
 
 export class SelectionTool {
   _isDragging = false;
@@ -80,7 +80,7 @@ function move(tool: SelectionTool, args: ToolEventArgs): void {
 
 function finish(tool: SelectionTool, biome: Biome): void {
   toggleGridOverlay(false);
-  apply(tool, biome);
+  fillSelectionWithScenery(tool._selection, biome);
   tool._selection = [];
   ui.tileSelection.tiles = [];
 }

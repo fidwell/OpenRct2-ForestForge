@@ -1,9 +1,8 @@
 import Biome from "../biomes/biome";
 import SceneryDesc from "../biomes/sceneryDesc";
 import { MapUtilities } from "../mapUtilities";
-import { SelectionTool } from "../selectionTool";
 
-export default function apply(tool: SelectionTool, biome: Biome) {
+export default function fillSelectionWithScenery(selection: CoordsXY[], biome: Biome) {
   const allScenery = objectManager.getAllObjects("small_scenery");
 
   const largeScenery: SceneryDesc[] = [];
@@ -28,7 +27,7 @@ export default function apply(tool: SelectionTool, biome: Biome) {
     }
   });
 
-  tool._selection.forEach((location: CoordsXY) => {
+  selection.forEach((location: CoordsXY) => {
     const tileHere = map.getTile(location.x, location.y);
     const surfaces = tileHere.elements.filter(e => e.type === "surface");
     if (surfaces.length !== 1) {
@@ -36,10 +35,10 @@ export default function apply(tool: SelectionTool, biome: Biome) {
       return;
     }
     const surfaceHeight = surfaces[0].clearanceHeight;
-    const numberOfSelectedNeighbors = MapUtilities.numberOfSelectedNeighbors(tileHere, tool._selection);
+    const numberOfSelectedNeighbors = MapUtilities.numberOfSelectedNeighbors(tileHere, selection);
 
     if (numberOfSelectedNeighbors <= 4) {
-      MapUtilities.neighboredCorners(location, tool._selection).forEach((quadrant: number) => {
+      MapUtilities.neighboredCorners(location, selection).forEach((quadrant: number) => {
         const treeHere = getObject(smallScenery);
         if (treeHere !== undefined) {
           placeObject(location, surfaceHeight, treeHere, quadrant)
