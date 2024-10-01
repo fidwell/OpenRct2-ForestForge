@@ -58,15 +58,15 @@ export default class Biome {
     return obj === undefined ? false : (obj.flags & 0x01) === 1;
   }
 
-  getTreeLarge(): SceneryDesc | undefined {
+  getSceneryObjectLarge(): SceneryDesc | undefined {
     return this.getObject(this.largeObjects);
   }
 
-  getTreeMedium(): SceneryDesc | undefined {
+  getSceneryObjectMedium(): SceneryDesc | undefined {
     return this.getObject(this.mediumObjects);
   }
 
-  getTreeSmall(): SceneryDesc | undefined {
+  getSceneryObjectSmall(): SceneryDesc | undefined {
     return this.getObject(this.smallObjects);
   }
 
