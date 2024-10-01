@@ -1,5 +1,5 @@
+import { Colour } from "openrct2-flexui";
 import Biome from "../biome";
-import { Colour } from "../colour";
 import SceneryDesc from "../sceneryDesc";
 
 export const defaultBiome = new Biome("Default", <SceneryDesc[]>[
@@ -27,7 +27,7 @@ export const defaultBiome = new Biome("Default", <SceneryDesc[]>[
   new SceneryDesc("rct2.scenery_small.tsh3", 2),
   new SceneryDesc("rct2.scenery_small.tsh4", 4),
   new SceneryDesc("rct2.scenery_small.tsh5", 2),
-  new SceneryDesc("rct2.scenery_small.tg19", 4, Colour.ForestGreen),
+  new SceneryDesc("rct2.scenery_small.tg19", 4, Colour.GrassGreenDark),
   new SceneryDesc("rct2.scenery_small.tg19", 2, Colour.MossGreen),
   new SceneryDesc("rct2.scenery_small.tg19", 1, Colour.DarkGreen),
   new SceneryDesc("rct2.scenery_small.tg19", 1, Colour.BordeauxRed),
