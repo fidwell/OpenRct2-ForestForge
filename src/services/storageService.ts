@@ -8,11 +8,9 @@ const palettesKey = `${pluginNamespace}.palettes`;
 
 export default class StorageService {
   public static storePalette(palette: Palette) {
-    console.log(`storageService 11: type is ${palette.type}`);
     if (palette.type === PaletteType.BuiltIn)
       return;
 
-    console.log(`storageService 15: saving ${palette.name}`);
     const storedPalettes = StorageService.getStoredPalettes()
       .filter(p => p.name !== palette.name);
     storedPalettes.push(palette);
@@ -31,7 +29,7 @@ export default class StorageService {
   public static getStoredPalettes(): Palette[] {
     const storedStuff = context.sharedStorage.get<Palette[]>(palettesKey, []);
     if (storedStuff.length === 0) {
-      console.log("Loading example custom palette");
+      console.log("No saved palettes found. Loading example custom palette.");
       const desert = new Palette("Desert", <SceneryDesc[]>[
         new SceneryDesc("rct2.scenery_small.tropt1", 1, Colour.Invisible, 0),
         new SceneryDesc("rct2.scenery_small.tpm", 1, Colour.Invisible, 0),

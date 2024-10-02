@@ -10,7 +10,8 @@ import { WindowTab } from "./windowTab";
 
 export class PaletteList extends WindowTab {
   // todo: make this a store, so the listview can update
-  private palettes: Palette[] = PaletteFactory.palettes();
+  private palettes: Palette[] = [];
+  private paletteListView = store<ListViewItem[]>([]);
   private buttonSize = 24;
 
   private selectedPalette = store<Palette>(new Palette("", []));
@@ -28,6 +29,7 @@ export class PaletteList extends WindowTab {
 
   constructor() {
     super();
+    this.refreshPaletteList();
     this.image = {
       frameBase: 5277,
       frameCount: 7,
@@ -55,7 +57,6 @@ export class PaletteList extends WindowTab {
             showRenamer(oldName, (name: string) => {
               StorageService.removePalette(oldName);
               const newPalette = new Palette(name, p.objects, PaletteType.Custom);
-              console.log(`paletteList 57: saving ${name}`);
               this.savePalette(newPalette);
             });
           }
@@ -77,10 +78,7 @@ export class PaletteList extends WindowTab {
       ]),
       listview({
         columns: ["Name", "Type"],
-        items: this.palettes.map(p => [
-          p.name,
-          PaletteType[p.type]
-        ]),
+        items: this.paletteListView,
         canSelect: true,
         isStriped: true,
         onClick: (index, _) => {
@@ -252,10 +250,17 @@ export class PaletteList extends WindowTab {
     });
   }
 
-  private savePalette(selectedPalette: Palette) {
-    console.log(`paletteList 255: saving ${selectedPalette.name}`);
-    StorageService.storePalette(selectedPalette);
+  private refreshPaletteList() {
     this.palettes = PaletteFactory.palettes();
+    this.paletteListView.set(this.palettes.map(p => [
+      p.name,
+      PaletteType[p.type]
+    ]));
+  }
+
+  private savePalette(selectedPalette: Palette) {
+    StorageService.storePalette(selectedPalette);
+    this.refreshPaletteList();
     this.selectedPalette.set(new Palette("", [])); // force list refresh
     this.selectedPalette.set(this.palettes[this.selectedPaletteIndex]);
   }
