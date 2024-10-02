@@ -8,6 +8,8 @@ const pluginNamespace = "ForestForge";
 const palettesKey = `${pluginNamespace}.palettes`;
 
 export default class StorageService {
+  public static onChange?: () => void;
+
   public static storePalette(palette: Palette) {
     if (palette.type === PaletteType.BuiltIn)
       return;
@@ -16,11 +18,19 @@ export default class StorageService {
       .filter(p => p.name !== palette.name);
     storedPalettes.push(palette);
     context.sharedStorage.set(palettesKey, storedPalettes);
+
+    if (this.onChange) {
+      this.onChange();
+    }
   }
 
   public static removePalette(name: string) {
     const storedStuff = context.sharedStorage.get<Palette[]>(palettesKey, []);
-    this.setStoredPalettes(storedStuff.filter(p => p.name !== name))
+    this.setStoredPalettes(storedStuff.filter(p => p.name !== name));
+
+    if (this.onChange) {
+      this.onChange();
+    }
   }
 
   public static setStoredPalettes(palettes: Palette[]) {

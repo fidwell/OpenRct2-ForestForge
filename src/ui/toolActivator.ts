@@ -1,13 +1,16 @@
 import { button, dropdown, store } from "openrct2-flexui";
+import Palette from "../palettes/Palette";
 import { PaletteFactory } from "../palettes/paletteFactory";
 import { SelectionTool } from "../selectionTool";
+import StorageService from "../services/storageService";
 import { WindowTab } from "./windowTab";
 
 let selectedPalette = 0;
 let activeTool: SelectionTool | undefined = undefined;
 let isActivated: boolean = false;
 
-const palettes = PaletteFactory.palettes();
+let palettes: Palette[] = [];
+const dropdownList = store<string[]>([]);
 const buttonText = store<string>("Activate tool");
 
 export class ToolActivator extends WindowTab {
@@ -18,7 +21,7 @@ export class ToolActivator extends WindowTab {
     this.height = 140;
     this.content = [
       dropdown({
-        items: palettes.map(p => p.name),
+        items: dropdownList,
         onChange: (index: number) => {
           selectedPalette = index;
         }
@@ -48,10 +51,17 @@ export class ToolActivator extends WindowTab {
         }
       })
     ];
+    loadPaletteList();
+    StorageService.onChange = () => loadPaletteList();
   }
 
   private cancel() {
     isActivated = false;
     buttonText.set("Activate tool");
   }
+}
+
+function loadPaletteList() {
+  palettes = PaletteFactory.palettes();
+  dropdownList.set(palettes.map(p => p.name));
 }
