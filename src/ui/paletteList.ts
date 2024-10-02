@@ -66,7 +66,13 @@ export class PaletteList extends WindowTab {
           width: this.buttonSize,
           height: this.buttonSize,
           tooltip: "Copy selected palette",
-          disabled: this.noPaletteSelected
+          disabled: this.noPaletteSelected,
+          onClick: () => {
+            const source = this.selectedPalette.get();
+            const copy = new Palette(`${source.name} copy`, source.objects, PaletteType.Custom);
+            StorageService.storePalette(copy);
+            this.refreshPaletteList();
+          }
         }),
         button({
           image: "demolish",
