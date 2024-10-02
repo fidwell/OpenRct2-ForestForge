@@ -1,15 +1,15 @@
 export abstract class MapUtilities {
   public static toTileCoords(coord: CoordsXY): CoordsXY {
     return {
-      x: Math.floor(coord.x / 32),
-      y: Math.floor(coord.y / 32)
+      x: coord.x >> 5,
+      y: coord.y >> 5
     };
   }
 
   public static toMapCoords(coord: CoordsXY): CoordsXY {
     return {
-      x: coord.x * 32,
-      y: coord.y * 32
+      x: coord.x << 5,
+      y: coord.y << 5
     };
   }
 
