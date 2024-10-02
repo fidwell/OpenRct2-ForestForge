@@ -18,7 +18,7 @@ export class PaletteList extends WindowTab {
   private selectedPaletteIndex = -1;
   private noPaletteSelected = store<boolean>(true);
   private selectedPaletteIsBuiltIn = store<boolean>(true);
-  private objects = store<string[][]>([]);
+  private paletteObjects = store<string[][]>([]);
 
   private entryDisabled = store<boolean>(true);
   private selectedObjectIndex = 0;
@@ -73,7 +73,12 @@ export class PaletteList extends WindowTab {
           width: this.buttonSize,
           height: this.buttonSize,
           tooltip: "Delete selected palette",
-          disabled: this.selectedPaletteIsBuiltIn
+          disabled: this.selectedPaletteIsBuiltIn,
+          onClick: () => {
+            StorageService.removePalette(this.selectedPalette.get().name);
+            this.refreshPaletteList();
+            this.clearObjectList();
+          }
         })
       ]),
       listview({
@@ -87,12 +92,7 @@ export class PaletteList extends WindowTab {
           this.selectedPaletteIndex = index;
           this.selectedPaletteIsBuiltIn.set(palette.type === PaletteType.BuiltIn);
           this.noPaletteSelected.set(false);
-          // Clear preivously-selected object details
-          this.entryDisabled.set(true);
-          this.selectedObjectIdentifier.set("");
-          this.selectedObjectWeight.set(0);
-          this.selectedObjectVoffset.set(0);
-          this.selectedObjectColour.set(Colour.Invisible);
+          this.clearObjectDetails();
         }
       }),
       groupbox({
@@ -118,7 +118,7 @@ export class PaletteList extends WindowTab {
               header: "Colour",
               width: 25
             }],
-            items: this.objects,
+            items: this.paletteObjects,
             disabled: this.selectedPaletteIsBuiltIn,
             canSelect: true,
             isStriped: true,
@@ -126,7 +126,7 @@ export class PaletteList extends WindowTab {
               if (this.selectedPaletteIsBuiltIn.get())
                 return;
 
-              const index = Number(this.objects.get()[indexStr][0]);
+              const index = Number(this.paletteObjects.get()[indexStr][0]);
               const object = this.selectedPalette.get().objects[Number(index)];
               this.entryDisabled.set(false);
               this.selectedObjectIndex = index;
@@ -246,8 +246,21 @@ export class PaletteList extends WindowTab {
         o.weight.toString(),
         o.primaryColour ? Colour[o.primaryColour] : ""
       ]);
-      this.objects.set(objectArray);
+      this.paletteObjects.set(objectArray);
     });
+  }
+
+  private clearObjectList() {
+    this.paletteObjects.set([]);
+    this.clearObjectDetails();
+  }
+
+  private clearObjectDetails() {
+    this.entryDisabled.set(true);
+    this.selectedObjectIdentifier.set("");
+    this.selectedObjectWeight.set(0);
+    this.selectedObjectVoffset.set(0);
+    this.selectedObjectColour.set(Colour.Invisible);
   }
 
   private refreshPaletteList() {
