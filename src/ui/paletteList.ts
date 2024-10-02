@@ -1,22 +1,22 @@
 import { button, Colour, colourPicker, groupbox, horizontal, label, listview, spinner, store, vertical } from "openrct2-flexui";
-import Biome from "../biomes/biome";
-import { BiomeFactory } from "../biomes/biomeFactory";
-import { BiomeType } from "../biomes/BiomeType";
-import SceneryDesc from "../biomes/sceneryDesc";
 import identifierHelper from "../helpers/identifierHelper";
+import Palette from "../palettes/Palette";
+import { PaletteFactory } from "../palettes/paletteFactory";
+import { PaletteType } from "../palettes/PaletteType";
+import SceneryDesc from "../palettes/sceneryDesc";
 import StorageService from "../services/storageService";
 import showRenamer from "./renamer";
 import { WindowTab } from "./windowTab";
 
-export class BiomeList extends WindowTab {
+export class PaletteList extends WindowTab {
   // todo: make this a store, so the listview can update
-  private biomes: Biome[] = BiomeFactory.biomes();
+  private palettes: Palette[] = PaletteFactory.palettes();
   private buttonSize = 24;
 
-  private selectedBiome = store<Biome>(new Biome("", []));
-  private selectedBiomeIndex = -1;
-  private noBiomeSelected = store<boolean>(true);
-  private selectedBiomeIsBuiltIn = store<boolean>(true);
+  private selectedPalette = store<Palette>(new Palette("", []));
+  private selectedPaletteIndex = -1;
+  private noPaletteSelected = store<boolean>(true);
+  private selectedPaletteIsBuiltIn = store<boolean>(true);
   private objects = store<string[][]>([]);
 
   private entryDisabled = store<boolean>(true);
@@ -48,15 +48,15 @@ export class BiomeList extends WindowTab {
           width: this.buttonSize,
           height: this.buttonSize,
           tooltip: "Rename selected palette",
-          disabled: this.selectedBiomeIsBuiltIn,
+          disabled: this.selectedPaletteIsBuiltIn,
           onClick: () => {
-            const b = this.selectedBiome.get()
-            const oldName = b.name;
+            const p = this.selectedPalette.get()
+            const oldName = p.name;
             showRenamer(oldName, (name: string) => {
               StorageService.removePalette(oldName);
-              const newBiome = new Biome(name, b.objects, BiomeType.Custom);
-              console.log(`biomeList 57: saving ${name}`);
-              this.saveBiome(newBiome);
+              const newPalette = new Palette(name, p.objects, PaletteType.Custom);
+              console.log(`paletteList 57: saving ${name}`);
+              this.savePalette(newPalette);
             });
           }
         }),
@@ -65,30 +65,30 @@ export class BiomeList extends WindowTab {
           width: this.buttonSize,
           height: this.buttonSize,
           tooltip: "Copy selected palette",
-          disabled: this.noBiomeSelected
+          disabled: this.noPaletteSelected
         }),
         button({
           image: "demolish",
           width: this.buttonSize,
           height: this.buttonSize,
           tooltip: "Delete selected palette",
-          disabled: this.selectedBiomeIsBuiltIn
+          disabled: this.selectedPaletteIsBuiltIn
         })
       ]),
       listview({
         columns: ["Name", "Type"],
-        items: this.biomes.map(b => [
-          b.name,
-          BiomeType[b.type]
+        items: this.palettes.map(p => [
+          p.name,
+          PaletteType[p.type]
         ]),
         canSelect: true,
         isStriped: true,
         onClick: (index, _) => {
-          const biome = this.biomes[index];
-          this.selectedBiome.set(biome);
-          this.selectedBiomeIndex = index;
-          this.selectedBiomeIsBuiltIn.set(biome.type === BiomeType.BuiltIn);
-          this.noBiomeSelected.set(false);
+          const palette = this.palettes[index];
+          this.selectedPalette.set(palette);
+          this.selectedPaletteIndex = index;
+          this.selectedPaletteIsBuiltIn.set(palette.type === PaletteType.BuiltIn);
+          this.noPaletteSelected.set(false);
           // Clear preivously-selected object details
           this.entryDisabled.set(true);
           this.selectedObjectIdentifier.set("");
@@ -99,7 +99,7 @@ export class BiomeList extends WindowTab {
       }),
       groupbox({
         text: "Edit palette",
-        disabled: this.selectedBiomeIsBuiltIn,
+        disabled: this.selectedPaletteIsBuiltIn,
         content: [
           listview({
             columns: [{
@@ -121,15 +121,15 @@ export class BiomeList extends WindowTab {
               width: 25
             }],
             items: this.objects,
-            disabled: this.selectedBiomeIsBuiltIn,
+            disabled: this.selectedPaletteIsBuiltIn,
             canSelect: true,
             isStriped: true,
             onClick: (indexStr: number, _) => {
-              if (this.selectedBiomeIsBuiltIn.get())
+              if (this.selectedPaletteIsBuiltIn.get())
                 return;
 
               const index = Number(this.objects.get()[indexStr][0]);
-              const object = this.selectedBiome.get().objects[Number(index)];
+              const object = this.selectedPalette.get().objects[Number(index)];
               this.entryDisabled.set(false);
               this.selectedObjectIndex = index;
               this.selectedObjectIdentifier.set(object.identifier);
@@ -162,10 +162,10 @@ export class BiomeList extends WindowTab {
                     tooltip: "Duplicate selected object",
                     disabled: this.entryDisabled,
                     onClick: () => {
-                      const biome = this.selectedBiome.get();
-                      const object = biome.objects[this.selectedObjectIndex];
-                      biome.objects.push(object);
-                      this.saveBiome(biome);
+                      const palette = this.selectedPalette.get();
+                      const object = palette.objects[this.selectedObjectIndex];
+                      palette.objects.push(object);
+                      this.savePalette(palette);
                     }
                   }),
                   button({
@@ -175,9 +175,9 @@ export class BiomeList extends WindowTab {
                     tooltip: "Delete selected object",
                     disabled: this.entryDisabled,
                     onClick: () => {
-                      const biome = this.selectedBiome.get();
-                      biome.objects.splice(this.selectedObjectIndex, 1);
-                      this.saveBiome(biome);
+                      const palette = this.selectedPalette.get();
+                      palette.objects.splice(this.selectedObjectIndex, 1);
+                      this.savePalette(palette);
                     }
                   })
                 ]
@@ -240,7 +240,7 @@ export class BiomeList extends WindowTab {
       })
     ];
 
-    this.selectedBiome.subscribe((b) => {
+    this.selectedPalette.subscribe((b) => {
       const objectArray = b.objects.map((o: SceneryDesc, i: number) => [
         i.toString(),
         identifierHelper(o.identifier),
@@ -252,22 +252,22 @@ export class BiomeList extends WindowTab {
     });
   }
 
-  private saveBiome(selectedBiome: Biome) {
-    console.log(`biomeList 255: saving ${selectedBiome.name}`);
-    StorageService.storePalette(selectedBiome);
-    this.biomes = BiomeFactory.biomes();
-    this.selectedBiome.set(new Biome("", [])); // force list refresh
-    this.selectedBiome.set(this.biomes[this.selectedBiomeIndex]);
+  private savePalette(selectedPalette: Palette) {
+    console.log(`paletteList 255: saving ${selectedPalette.name}`);
+    StorageService.storePalette(selectedPalette);
+    this.palettes = PaletteFactory.palettes();
+    this.selectedPalette.set(new Palette("", [])); // force list refresh
+    this.selectedPalette.set(this.palettes[this.selectedPaletteIndex]);
   }
 
   private saveObject() {
-    const selectedBiome = this.selectedBiome.get();
-    const selectedObject = selectedBiome.objects[this.selectedObjectIndex];
-    selectedBiome.objects[this.selectedObjectIndex] = new SceneryDesc(
+    const selectedPalette = this.selectedPalette.get();
+    const selectedObject = selectedPalette.objects[this.selectedObjectIndex];
+    selectedPalette.objects[this.selectedObjectIndex] = new SceneryDesc(
       selectedObject.identifier,
       this.selectedObjectWeight?.get(),
       this.selectedObjectColour?.get(),
       this.selectedObjectVoffset?.get());
-    this.saveBiome(selectedBiome);
+    this.savePalette(selectedPalette);
   }
 }

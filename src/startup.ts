@@ -1,6 +1,6 @@
 import { tabwindow } from "openrct2-flexui";
 import { SelectionTool } from "./selectionTool";
-import { BiomeList } from "./ui/biomeList";
+import { PaletteList } from "./ui/paletteList";
 import { ToolActivator } from "./ui/toolActivator";
 
 let activeTool: SelectionTool;
@@ -8,7 +8,7 @@ let isWindowOpen = false;
 
 const tabs = [
   new ToolActivator(),
-  new BiomeList()
+  new PaletteList()
 ];
 
 const pluginWindow = tabwindow({

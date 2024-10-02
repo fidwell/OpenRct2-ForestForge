@@ -1,13 +1,13 @@
 import { button, dropdown, store } from "openrct2-flexui";
-import { BiomeFactory } from "../biomes/biomeFactory";
+import { PaletteFactory } from "../palettes/paletteFactory";
 import { SelectionTool } from "../selectionTool";
 import { WindowTab } from "./windowTab";
 
-let selectedBiome = 0;
+let selectedPalette = 0;
 let activeTool: SelectionTool | undefined = undefined;
 let isActivated: boolean = false;
 
-const biomes = BiomeFactory.biomes();
+const palettes = PaletteFactory.palettes();
 const buttonText = store<string>("Activate tool");
 
 export class ToolActivator extends WindowTab {
@@ -18,9 +18,9 @@ export class ToolActivator extends WindowTab {
     this.height = 140;
     this.content = [
       dropdown({
-        items: biomes.map(b => b.name),
+        items: palettes.map(p => p.name),
         onChange: (index: number) => {
-          selectedBiome = index;
+          selectedPalette = index;
         }
       }),
       button({
@@ -42,7 +42,7 @@ export class ToolActivator extends WindowTab {
         text: "Apply",
         height: "28px",
         onClick: () => {
-          activeTool?.apply(biomes[selectedBiome]);
+          activeTool?.apply(palettes[selectedPalette]);
           buttonText.set("Activate tool");
           isActivated = false;
         }

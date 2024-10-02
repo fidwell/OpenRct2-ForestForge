@@ -1,18 +1,18 @@
-import Biome from "../biomes/biome";
-import SceneryDesc from "../biomes/sceneryDesc";
 import { MapUtilities } from "../mapUtilities";
+import Palette from "../palettes/Palette";
+import SceneryDesc from "../palettes/sceneryDesc";
 
-export default function fillSelectionWithScenery(selection: CoordsXY[], biome: Biome) {
+export default function fillSelectionWithScenery(selection: CoordsXY[], palette: Palette) {
   const allScenery = objectManager.getAllObjects("small_scenery");
 
   const largeScenery: SceneryDesc[] = [];
   const mediumScenery: SceneryDesc[] = [];
   const smallScenery: SceneryDesc[] = [];
-  biome.objects.forEach(sceneryDesc => {
+  palette.objects.forEach(sceneryDesc => {
     sceneryDesc.object = getSceneryObject(sceneryDesc, allScenery);
   });
-  const heightCutoff = getHeightCutoff(biome.objects);
-  biome.objects.forEach(sceneryDesc => {
+  const heightCutoff = getHeightCutoff(palette.objects);
+  palette.objects.forEach(sceneryDesc => {
     if (sceneryDesc.object === undefined)
       return;
 

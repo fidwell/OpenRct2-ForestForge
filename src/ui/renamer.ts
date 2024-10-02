@@ -6,7 +6,7 @@ let _callback: (result: string) => any;
 const nameValue = store<string>("");
 
 const renamerWindow = window({
-  title: "Biome name",
+  title: "Palette name",
   width: 250,
   height: 80,
   position: "center",
@@ -14,7 +14,7 @@ const renamerWindow = window({
     vertical({
       content: [
         label({
-          text: "Enter a new name for this biome:"
+          text: "Enter a new name for this palette:"
         }),
         textbox({
           text: nameValue,

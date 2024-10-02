@@ -1,38 +1,38 @@
 import { Colour } from "openrct2-flexui";
-import Biome from "../biomes/biome";
-import { BiomeType } from "../biomes/BiomeType";
-import SceneryDesc from "../biomes/sceneryDesc";
+import Palette from "../palettes/Palette";
+import { PaletteType } from "../palettes/PaletteType";
+import SceneryDesc from "../palettes/sceneryDesc";
 
 const pluginNamespace = "ForestForge";
 const palettesKey = `${pluginNamespace}.palettes`;
 
 export default class StorageService {
-  public static storePalette(biome: Biome) {
-    console.log(`storageService 11: type is ${biome.type}`);
-    if (biome.type === BiomeType.BuiltIn)
+  public static storePalette(palette: Palette) {
+    console.log(`storageService 11: type is ${palette.type}`);
+    if (palette.type === PaletteType.BuiltIn)
       return;
 
-    console.log(`storageService 15: saving ${biome.name}`);
+    console.log(`storageService 15: saving ${palette.name}`);
     const storedPalettes = StorageService.getStoredPalettes()
-      .filter(p => p.name !== biome.name);
-    storedPalettes.push(biome);
+      .filter(p => p.name !== palette.name);
+    storedPalettes.push(palette);
     context.sharedStorage.set(palettesKey, storedPalettes);
   }
 
   public static removePalette(name: string) {
-    const storedStuff = context.sharedStorage.get<Biome[]>(palettesKey, []);
+    const storedStuff = context.sharedStorage.get<Palette[]>(palettesKey, []);
     this.setStoredPalettes(storedStuff.filter(p => p.name !== name))
   }
 
-  public static setStoredPalettes(palettes: Biome[]) {
+  public static setStoredPalettes(palettes: Palette[]) {
     context.sharedStorage.set(palettesKey, palettes);
   }
 
-  public static getStoredPalettes(): Biome[] {
-    const storedStuff = context.sharedStorage.get<Biome[]>(palettesKey, []);
+  public static getStoredPalettes(): Palette[] {
+    const storedStuff = context.sharedStorage.get<Palette[]>(palettesKey, []);
     if (storedStuff.length === 0) {
-      console.log("Loading example custom biome");
-      const desert = new Biome("Desert", <SceneryDesc[]>[
+      console.log("Loading example custom palette");
+      const desert = new Palette("Desert", <SceneryDesc[]>[
         new SceneryDesc("rct2.scenery_small.tropt1", 1, Colour.Invisible, 0),
         new SceneryDesc("rct2.scenery_small.tpm", 1, Colour.Invisible, 0),
         new SceneryDesc("rct2.scenery_small.th2", 1, Colour.Invisible, 0),
@@ -41,7 +41,7 @@ export default class StorageService {
         new SceneryDesc("rct2.scenery_small.tsh4", 1, Colour.Invisible, 0),
         new SceneryDesc("rct2.scenery_small.tg19", 1, Colour.DarkYellow, 0),
         new SceneryDesc("rct2.scenery_small.tg19", 2, Colour.Invisible, 0)
-      ], BiomeType.Custom);
+      ], PaletteType.Custom);
       storedStuff.push(desert);
     }
     return storedStuff;

@@ -1,8 +1,8 @@
 import { Colour } from "openrct2-flexui";
-import Biome from "../biomes/biome";
-import SceneryDesc from "../biomes/sceneryDesc";
+import Palette from "../palettes/Palette";
+import SceneryDesc from "../palettes/sceneryDesc";
 
-export const swamp = new Biome("Swamp", <SceneryDesc[]>[
+export const swamp = new Palette("Swamp", <SceneryDesc[]>[
   new SceneryDesc("rct2.scenery_small.tjt1", 2),
   new SceneryDesc("rct2.scenery_small.tjt2", 2),
   new SceneryDesc("rct2.scenery_small.tjt5", 1),
