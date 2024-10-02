@@ -43,7 +43,13 @@ export class PaletteList extends WindowTab {
           image: "small_scenery",
           width: this.buttonSize,
           height: this.buttonSize,
-          tooltip: "Create new palette"
+          tooltip: "Create new palette",
+          onClick: () => {
+            showRenamer("", (name: string) => {
+              const newPalette = new Palette(name, [], PaletteType.Custom);
+              this.savePalette(newPalette);
+            });
+          }
         }),
         button({
           image: "rename",
@@ -70,8 +76,7 @@ export class PaletteList extends WindowTab {
           onClick: () => {
             const source = this.selectedPalette.get();
             const copy = new Palette(`${source.name} copy`, source.objects, PaletteType.Custom);
-            StorageService.storePalette(copy);
-            this.refreshPaletteList();
+            this.savePalette(copy);
           }
         }),
         button({
