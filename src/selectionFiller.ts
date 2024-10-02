@@ -1,14 +1,19 @@
 import Biome from "./biome";
 import { MapUtilities } from "./mapUtilities";
 import SceneryDesc from "./sceneryDesc";
+import * as logger from "./services/logger";
 
 export abstract class SelectionFiller {
   public static fillSelectionWithScenery(selection: CoordsXY[], biome: Biome) {
+    if (!cheats.disableClearanceChecks) {
+      logger.warning("Clearance checks are on. Some objects might not be able to be placed.");
+    }
+
     selection.forEach((location: CoordsXY) => {
       const tileHere = map.getTile(location.x, location.y);
       const surfaces = tileHere.elements.filter(e => e.type === "surface");
       if (surfaces.length !== 1) {
-        console.log("Found either no surfaces or more than one.");
+        logger.error("Found either no surfaces or more than one.");
         return;
       }
       const surfaceHeight = surfaces[0].clearanceHeight;
@@ -52,6 +57,8 @@ export abstract class SelectionFiller {
     context.queryAction("smallsceneryplace", args, (result: GameActionResult) => {
       if (result.error === undefined || result.error === 0) {
         context.executeAction("smallsceneryplace", args);
+      } else {
+        logger.error(`Couldn't place object ${sceneryDesc.object?.identifier} at ${location.x},${location.y} with vertical offset ${sceneryDesc.verticalOffset}.`);
       }
     });
   }

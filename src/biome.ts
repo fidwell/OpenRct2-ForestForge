@@ -1,4 +1,5 @@
 import SceneryDesc from "./sceneryDesc";
+import * as logger from "./services/logger";
 
 export default class Biome {
   private largeObjects: SceneryDesc[] = [];
@@ -23,7 +24,7 @@ export default class Biome {
   private fillSceneryObject(scenery: SceneryDesc, allScenery: SmallSceneryObject[]): void {
     const sceneryObjectMatches = allScenery.filter(s => s.identifier === scenery.identifier);
     if (sceneryObjectMatches.length !== 1) {
-      console.log(`Scenery identifier ${scenery.identifier} could not be loaded.`);
+      logger.error(`Scenery identifier ${scenery.identifier} could not be loaded.`);
     }
     scenery.object = sceneryObjectMatches[0];
   }
