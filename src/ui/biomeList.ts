@@ -5,9 +5,11 @@ import { BiomeType } from "../biomes/BiomeType";
 import SceneryDesc from "../biomes/sceneryDesc";
 import identifierHelper from "../helpers/identifierHelper";
 import StorageService from "../services/storageService";
+import showRenamer from "./renamer";
 import { WindowTab } from "./windowTab";
 
 export class BiomeList extends WindowTab {
+  // todo: make this a store, so the listview can update
   private biomes: Biome[] = BiomeFactory.biomes();
   private buttonSize = 24;
 
@@ -46,7 +48,17 @@ export class BiomeList extends WindowTab {
           width: this.buttonSize,
           height: this.buttonSize,
           tooltip: "Rename selected palette",
-          disabled: this.selectedBiomeIsBuiltIn
+          disabled: this.selectedBiomeIsBuiltIn,
+          onClick: () => {
+            const b = this.selectedBiome.get()
+            const oldName = b.name;
+            showRenamer(oldName, (name: string) => {
+              StorageService.removePalette(oldName);
+              const newBiome = new Biome(name, b.objects, BiomeType.Custom);
+              console.log(`biomeList 57: saving ${name}`);
+              this.saveBiome(newBiome);
+            });
+          }
         }),
         button({
           image: "copy",
@@ -241,6 +253,7 @@ export class BiomeList extends WindowTab {
   }
 
   private saveBiome(selectedBiome: Biome) {
+    console.log(`biomeList 255: saving ${selectedBiome.name}`);
     StorageService.storePalette(selectedBiome);
     this.biomes = BiomeFactory.biomes();
     this.selectedBiome.set(new Biome("", [])); // force list refresh
