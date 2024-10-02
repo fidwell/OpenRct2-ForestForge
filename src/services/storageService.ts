@@ -2,6 +2,7 @@ import { Colour } from "openrct2-flexui";
 import Palette from "../palettes/Palette";
 import { PaletteType } from "../palettes/PaletteType";
 import SceneryDesc from "../palettes/sceneryDesc";
+import * as logger from "../services/logger";
 
 const pluginNamespace = "ForestForge";
 const palettesKey = `${pluginNamespace}.palettes`;
@@ -29,7 +30,7 @@ export default class StorageService {
   public static getStoredPalettes(): Palette[] {
     const storedStuff = context.sharedStorage.get<Palette[]>(palettesKey, []);
     if (storedStuff.length === 0) {
-      console.log("No saved palettes found. Loading example custom palette.");
+      logger.info("No saved palettes found. Loading example custom palette.");
       const desert = new Palette("Desert", <SceneryDesc[]>[
         new SceneryDesc("rct2.scenery_small.tropt1", 1, Colour.Invisible, 0),
         new SceneryDesc("rct2.scenery_small.tpm", 1, Colour.Invisible, 0),

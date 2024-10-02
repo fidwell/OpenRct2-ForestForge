@@ -1,6 +1,8 @@
+import simplify from "../helpers/identifierHelper";
 import { MapUtilities } from "../mapUtilities";
 import Palette from "../palettes/Palette";
 import SceneryDesc from "../palettes/sceneryDesc";
+import * as logger from "../services/logger";
 
 export default function fillSelectionWithScenery(selection: CoordsXY[], palette: Palette) {
   const allScenery = objectManager.getAllObjects("small_scenery");
@@ -27,11 +29,15 @@ export default function fillSelectionWithScenery(selection: CoordsXY[], palette:
     }
   });
 
+  if (!cheats.disableClearanceChecks) {
+    logger.warning("Clearance checks are on. Some objects might not be able to be placed.");
+  }
+
   selection.forEach((location: CoordsXY) => {
     const tileHere = map.getTile(location.x, location.y);
     const surfaces = tileHere.elements.filter(e => e.type === "surface");
     if (surfaces.length !== 1) {
-      console.log("Found either no surfaces or more than one.");
+      logger.error("Found either no surfaces or more than one.");
       return;
     }
     const surfaceHeight = surfaces[0].clearanceHeight;
@@ -58,7 +64,7 @@ export default function fillSelectionWithScenery(selection: CoordsXY[], palette:
 function getSceneryObject(scenery: SceneryDesc, allScenery: SmallSceneryObject[]): SmallSceneryObject {
   const sceneryObjectMatches = allScenery.filter(s => s.identifier === scenery.identifier);
   if (sceneryObjectMatches.length !== 1) {
-    console.log(`Scenery identifier ${scenery.identifier} could not be loaded.`);
+    logger.error(`Scenery identifier ${scenery.identifier} could not be loaded.`);
   }
   return sceneryObjectMatches[0];
 }
@@ -122,6 +128,8 @@ function placeObject(
   context.queryAction("smallsceneryplace", args, (result: GameActionResult) => {
     if (result.error === undefined || result.error === 0) {
       context.executeAction("smallsceneryplace", args);
+    } else {
+      logger.error(`Couldn't place object ${simplify(sceneryDesc.object?.identifier ?? "")} at ${location.x},${location.y} with vertical offset ${sceneryDesc.verticalOffset}.`);
     }
   });
 }
