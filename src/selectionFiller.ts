@@ -43,8 +43,8 @@ export abstract class SelectionFiller {
     sceneryDesc: SceneryDesc,
     quadrant: number) {
     const args = <SmallSceneryPlaceArgs>{
-      x: location.x * 32,
-      y: location.y * 32,
+      x: location.x << 5,
+      y: location.y << 5,
       z:  8 * (surfaceHeight - (sceneryDesc.verticalOffset ?? 0)),
       direction: context.getRandom(0, 4),
       object: sceneryDesc.object?.index,
