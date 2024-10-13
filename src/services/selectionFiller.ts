@@ -1,5 +1,5 @@
 import simplify from "../helpers/identifierHelper";
-import { MapUtilities } from "../mapUtilities";
+import { MapUtilities } from "../helpers/mapUtilities";
 import Palette from "../palettes/Palette";
 import SceneryDesc from "../palettes/sceneryDesc";
 import * as logger from "../services/logger";

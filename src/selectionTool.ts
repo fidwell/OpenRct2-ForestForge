@@ -1,4 +1,4 @@
-import { MapUtilities } from "./mapUtilities";
+import { MapUtilities } from "./helpers/mapUtilities";
 import Palette from "./palettes/Palette";
 import fillSelectionWithScenery from "./services/selectionFiller";
 
