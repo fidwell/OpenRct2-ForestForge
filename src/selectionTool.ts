@@ -1,6 +1,6 @@
-import Biome from "./biome";
-import { MapUtilities } from "./mapUtilities";
-import { SelectionFiller } from "./selectionFiller";
+import { MapUtilities } from "./helpers/mapUtilities";
+import Palette from "./palettes/Palette";
+import fillSelectionWithScenery from "./services/selectionFiller";
 
 export class SelectionTool {
   _isDragging = false;
@@ -28,8 +28,8 @@ export class SelectionTool {
     });
   }
 
-  apply(biome: Biome): void {
-    finish(this, biome);
+  apply(palette: Palette): void {
+    finish(this, palette);
     this.cancel();
   }
 
@@ -78,9 +78,9 @@ function move(tool: SelectionTool, args: ToolEventArgs): void {
   tool._selection = toggleTile(tool._selection, location, tool._isAddingToSelection);
 }
 
-function finish(tool: SelectionTool, biome: Biome): void {
+function finish(tool: SelectionTool, palette: Palette): void {
   toggleGridOverlay(false);
-  SelectionFiller.fillSelectionWithScenery(tool._selection, biome);
+  fillSelectionWithScenery(tool._selection, palette);
   tool._selection = [];
   ui.tileSelection.tiles = [];
 }

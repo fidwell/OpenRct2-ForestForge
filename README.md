@@ -4,8 +4,8 @@ A plugin for OpenRCT2 that procedurally generates foliage in a painted area.
 
 ## Planned features
 
-- More predefined biomes
-- Support for user-defined biomes
+- More predefined palettes
+- Support for user-defined palettes
 - Change surface type (maybe)
 
 ## Installation

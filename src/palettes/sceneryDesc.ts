@@ -6,17 +6,13 @@ export default class SceneryDesc {
   constructor(
     readonly identifier: string,
     readonly weight: number,
-    readonly primaryColour?: number,
-    readonly verticalOffset?: number) {
+    readonly primaryColour: Colour = Colour.Invisible,
+    readonly verticalOffset: number = 0) {
       if (primaryColour === undefined) {
         primaryColour = Colour.GrassGreenDark;
       }
       if (verticalOffset === undefined) {
         verticalOffset = 0;
       }
-  }
-
-  public get effectiveHeight(): number {
-    return ((this.object?.height ?? 0) >> 3) - (this.verticalOffset ?? 0);
   }
 }

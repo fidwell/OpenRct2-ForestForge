@@ -1,61 +1,27 @@
-import { button, dropdown, store, window } from "openrct2-flexui";
-import { BiomeFactory } from "./biomeFactory";
+import { tabwindow } from "openrct2-flexui";
 import { SelectionTool } from "./selectionTool";
+import { PaletteList } from "./ui/paletteList";
+import { ToolActivator } from "./ui/toolActivator";
 
-let selectedBiome = 0;
 let activeTool: SelectionTool;
-const biomes = BiomeFactory.biomes();
 let isWindowOpen = false;
 
-let isActivated: boolean = false;
-const buttonText = store<string>("Activate tool");
+const tabs = [
+  new ToolActivator(),
+  new PaletteList()
+];
 
-const pluginWindow = window({
+const pluginWindow = tabwindow({
   title: "Forest Forge",
-  width: 200,
-  height: 105,
-  content: [
-    dropdown({
-      items: biomes.map(b => b.name),
-      onChange: (index: number) => {
-        selectedBiome = index;
-      }
-    }),
-    button({
-      text: buttonText,
-      height: "28px",
-      onClick: () => {
-        if (isActivated) {
-          activeTool.cancel();
-        } else {
-          activeTool = new SelectionTool("forestForge", "tree_down");
-          activeTool.onCancel = cancel;
-          activeTool.activate();
-          buttonText.set("Cancel");
-          isActivated = true;
-        }
-      }
-    }),
-    button({
-      text: "Apply",
-      height: "28px",
-      onClick: () => {
-        activeTool?.apply(biomes[selectedBiome]);
-        buttonText.set("Activate tool");
-        isActivated = false;
-      }
-    })
-  ],
+  width: 0,
+  height: 0,
+  tabs: tabs.map(t => t.asTab()),
   onClose: () => {
-    activeTool.cancel();
+    activeTool?.cancel();
     isWindowOpen = false;
+    ui.tool?.cancel();
   }
 });
-
-function cancel() {
-  isActivated = false;
-  buttonText.set("Activate tool");
-}
 
 export function startup() {
   if (typeof ui !== "undefined") {
