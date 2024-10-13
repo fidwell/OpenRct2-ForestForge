@@ -19,7 +19,7 @@ export default function fillSelectionWithScenery(selection: CoordsXY[], palette:
       return;
 
     if (isFullTile(sceneryDesc.object)) {
-      if (sceneryDesc.effectiveHeight >= heightCutoff) {
+      if (effectiveHeight(sceneryDesc) >= heightCutoff) {
         largeScenery.push(sceneryDesc);
       } else {
         mediumScenery.push(sceneryDesc);
@@ -74,7 +74,7 @@ function getHeightCutoff(allObjects: SceneryDesc[]) {
   // point at the median height of all selected full-tile objects.
   const objectHeights = allObjects
     .filter(s => isFullTile(s.object))
-    .map(s => s.effectiveHeight)
+    .map(s => effectiveHeight(s))
     .sort((a, b) => a - b);
   return objectHeights[Math.ceil(objectHeights.length / 2)] ?? objectHeights[0];
 }
@@ -132,4 +132,8 @@ function placeObject(
       logger.error(`Couldn't place object ${simplify(sceneryDesc.object?.identifier ?? "")} at ${location.x},${location.y} with vertical offset ${sceneryDesc.verticalOffset}.`);
     }
   });
+}
+
+function effectiveHeight(scenery: SceneryDesc): number {
+  return ((scenery.object?.height ?? 0) >> 3) - (scenery.verticalOffset ?? 0);
 }
