@@ -1,8 +1,5 @@
-import { Colour } from "openrct2-flexui";
 import Palette from "../palettes/Palette";
 import { PaletteType } from "../palettes/PaletteType";
-import SceneryDesc from "../palettes/sceneryDesc";
-import * as logger from "../services/logger";
 
 const pluginNamespace = "ForestForge";
 const palettesKey = `${pluginNamespace}.palettes`;
@@ -38,21 +35,6 @@ export default class StorageService {
   }
 
   public static getStoredPalettes(): Palette[] {
-    const storedStuff = context.sharedStorage.get<Palette[]>(palettesKey, []);
-    if (storedStuff.length === 0) {
-      logger.info("No saved palettes found. Loading example custom palette.");
-      const desert = new Palette("Desert", <SceneryDesc[]>[
-        new SceneryDesc("rct2.scenery_small.tropt1", 1, Colour.Invisible, 0),
-        new SceneryDesc("rct2.scenery_small.tpm", 1, Colour.Invisible, 0),
-        new SceneryDesc("rct2.scenery_small.th2", 1, Colour.Invisible, 0),
-        new SceneryDesc("rct2.scenery_small.tjb1", 1, Colour.Invisible, 0),
-        new SceneryDesc("rct2ww.scenery_small.japsnotr", 1, Colour.Invisible, 5),
-        new SceneryDesc("rct2.scenery_small.tsh4", 1, Colour.Invisible, 0),
-        new SceneryDesc("rct2.scenery_small.tg19", 1, Colour.DarkYellow, 0),
-        new SceneryDesc("rct2.scenery_small.tg19", 2, Colour.Invisible, 0)
-      ], PaletteType.Custom);
-      storedStuff.push(desert);
-    }
-    return storedStuff;
+    return context.sharedStorage.get<Palette[]>(palettesKey, []);
   }
 }

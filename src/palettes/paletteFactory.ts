@@ -1,5 +1,6 @@
 import { coniferousForest } from "../presets/coniferousForest";
 import { defaultPalette } from "../presets/defaultPalette";
+import { desert } from "../presets/desert";
 import { pineForest } from "../presets/pineForest";
 import { snowyForest } from "../presets/snowyForest";
 import { swamp } from "../presets/swamp";
@@ -10,6 +11,7 @@ export abstract class PaletteFactory {
   public static palettes(): Palette[] {
     const palettes = [
       defaultPalette,
+      desert,
       swamp,
       coniferousForest,
       pineForest,
