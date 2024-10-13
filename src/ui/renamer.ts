@@ -27,10 +27,10 @@ const renamerWindow = window({
             button({
               text: "OK",
               onClick: () => {
+                renamerWindow.close();
                 if (_callback) {
                   _callback(nameValue.get());
                 }
-                renamerWindow.close();
               }
             }),
             label({
