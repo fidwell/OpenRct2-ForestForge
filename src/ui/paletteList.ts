@@ -1,5 +1,6 @@
 import { button, Colour, colourPicker, groupbox, horizontal, label, listview, spinner, store, vertical } from "openrct2-flexui";
 import identifierHelper from "../helpers/identifierHelper";
+import { MapUtilities } from "../helpers/mapUtilities";
 import Palette from "../palettes/Palette";
 import { PaletteFactory } from "../palettes/paletteFactory";
 import { PaletteType } from "../palettes/PaletteType";
@@ -110,6 +111,21 @@ export class PaletteList extends WindowTab {
         text: "Edit palette",
         disabled: this.selectedPaletteIsBuiltIn,
         content: [
+          button({
+            image: "eyedropper",
+            width: this.buttonSize,
+            height: this.buttonSize,
+            tooltip: "Add a new object by selecting from the map",
+            disabled: this.noPaletteSelected,
+            onClick: () => {
+              this.usePickerTool((identifier: string) => {
+                const palette = this.selectedPalette.get();
+                const object = new SceneryDesc(identifier, 1);
+                palette.objects.push(object);
+                this.savePalette(palette);
+              })
+            }
+          }),
           listview({
             columns: [{
               header: "#",
@@ -161,8 +177,14 @@ export class PaletteList extends WindowTab {
                     image: "eyedropper",
                     width: this.buttonSize,
                     height: this.buttonSize,
-                    tooltip: "Select an object from the map",
-                    disabled: this.entryDisabled
+                    tooltip: "Change this object by selecting from the map",
+                    disabled: this.entryDisabled,
+                    onClick: () => {
+                      this.usePickerTool((identifier: string) => {
+                        this.selectedObjectIdentifier.set(identifier);
+                        this.saveObject();
+                      })
+                    }
                   }),
                   button({
                     image: "copy",
@@ -258,6 +280,7 @@ export class PaletteList extends WindowTab {
         o.primaryColour ? Colour[o.primaryColour] : ""
       ]);
       this.paletteObjects.set(objectArray);
+      ui.tool?.cancel();
     });
   }
 
@@ -291,12 +314,33 @@ export class PaletteList extends WindowTab {
 
   private saveObject() {
     const selectedPalette = this.selectedPalette.get();
-    const selectedObject = selectedPalette.objects[this.selectedObjectIndex];
     selectedPalette.objects[this.selectedObjectIndex] = new SceneryDesc(
-      selectedObject.identifier,
+      this.selectedObjectIdentifier?.get(),
       this.selectedObjectWeight?.get(),
       this.selectedObjectColour?.get(),
       this.selectedObjectVoffset?.get());
     this.savePalette(selectedPalette);
+  }
+
+  private usePickerTool(callback: (identifier: string) => any) {
+    ui.activateTool(<ToolDesc>{
+      id: "forest-forge-picker",
+      cursor: "cross_hair",
+      onDown: (e) => {
+        if (e.mapCoords && e.tileElementIndex) {
+          const tileHere = MapUtilities.toTileCoords(e.mapCoords);
+          const tile = map.getTile(tileHere.x, tileHere.y);
+          const element = tile.elements[e.tileElementIndex];
+
+          if (element.type !== "small_scenery")
+            return;
+
+          const scenery = element as SmallSceneryElement;
+          const asObject = objectManager.getObject("small_scenery", scenery.object);
+          callback(asObject.identifier);
+        }
+        ui.tool?.cancel();
+      },
+    });
   }
 }

@@ -19,6 +19,7 @@ const pluginWindow = tabwindow({
   onClose: () => {
     activeTool?.cancel();
     isWindowOpen = false;
+    ui.tool?.cancel();
   }
 });
 
