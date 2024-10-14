@@ -7,27 +7,23 @@ import * as logger from "../services/logger";
 export default function fillSelectionWithScenery(selection: CoordsXY[], palette: Palette) {
   const allScenery = objectManager.getAllObjects("small_scenery");
 
-  const largeScenery: SceneryDesc[] = [];
-  const mediumScenery: SceneryDesc[] = [];
-  const smallScenery: SceneryDesc[] = [];
+  const fullTileScenery: SceneryDesc[] = [];
+  const quarterTileScenery: SceneryDesc[] = [];
   palette.objects.forEach(sceneryDesc => {
     sceneryDesc.object = getSceneryObject(sceneryDesc, allScenery);
   });
-  const heightCutoff = getHeightCutoff(palette.objects);
+
   palette.objects.forEach(sceneryDesc => {
     if (sceneryDesc.object === undefined)
       return;
 
     if (isFullTile(sceneryDesc.object)) {
-      if (effectiveHeight(sceneryDesc) >= heightCutoff) {
-        largeScenery.push(sceneryDesc);
-      } else {
-        mediumScenery.push(sceneryDesc);
-      }
+      fullTileScenery.push(sceneryDesc);
     } else {
-      smallScenery.push(sceneryDesc);
+      quarterTileScenery.push(sceneryDesc);
     }
   });
+  fullTileScenery.sort((a, b) => effectiveHeight(a) - effectiveHeight(b));
 
   if (!cheats.disableClearanceChecks) {
     logger.warning("Clearance checks are on. Some objects might not be able to be placed.");
@@ -45,15 +41,18 @@ export default function fillSelectionWithScenery(selection: CoordsXY[], palette:
 
     if (numberOfSelectedNeighbors <= 4) {
       MapUtilities.neighboredCorners(location, selection).forEach((quadrant: number) => {
-        const treeHere = getObject(smallScenery);
+        const treeHere = getObject(quarterTileScenery, max => context.getRandom(0, max));
         if (treeHere !== undefined) {
           placeObject(location, surfaceHeight, treeHere, quadrant)
         }
       });
     } else {
-      const treeHere = numberOfSelectedNeighbors >= 7
-        ? getObject(largeScenery)
-        : getObject(mediumScenery);
+      const treeHere = getObject(fullTileScenery, max => {
+        // Randomly select a full-tile object, weighted based
+        // on how tall each potential object could be.
+        const gaussed = gaussianRandom((numberOfSelectedNeighbors - 6.5) / 4 * fullTileScenery.length, 2);
+        return clamp(gaussed, 0, max);
+      });
       if (treeHere !== undefined) {
         placeObject(location, surfaceHeight, treeHere, 0);
       }
@@ -69,21 +68,11 @@ function getSceneryObject(scenery: SceneryDesc, allScenery: SmallSceneryObject[]
   return sceneryObjectMatches[0];
 }
 
-function getHeightCutoff(allObjects: SceneryDesc[]) {
-  // Caculate what is "large" and what is "medium" by defining a cutoff
-  // point at the median height of all selected full-tile objects.
-  const objectHeights = allObjects
-    .filter(s => isFullTile(s.object))
-    .map(s => effectiveHeight(s))
-    .sort((a, b) => a - b);
-  return objectHeights[Math.ceil(objectHeights.length / 2)] ?? objectHeights[0];
-}
-
 function isFullTile(obj: SmallSceneryObject | undefined): boolean {
   return obj === undefined ? false : (obj.flags & 0x01) === 1;
 }
 
-function getObject(list: SceneryDesc[]): SceneryDesc | undefined {
+function getObject(list: SceneryDesc[], randomGenerator: (max: number) => number): SceneryDesc | undefined {
   if (list.length === 0) {
     ui.showError("ForestForge", "No foliage could be placed.");
     return undefined;
@@ -97,7 +86,7 @@ function getObject(list: SceneryDesc[]): SceneryDesc | undefined {
     return list[0];
   }
 
-  let randomValue = context.getRandom(0, totalOfWeights);
+  let randomValue = randomGenerator(totalOfWeights);
   for (let i = 0; i < list.length; i++) {
     if (randomValue < list[i].weight) {
       return list[i];
@@ -136,4 +125,15 @@ function placeObject(
 
 function effectiveHeight(scenery: SceneryDesc): number {
   return ((scenery.object?.height ?? 0) >> 3) - (scenery.verticalOffset ?? 0);
+}
+
+function gaussianRandom(mean: number = 0, stdDev: number = 1): number {
+  const u = 1 - Math.random();
+  const v = Math.random();
+  const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+  return z * stdDev + mean;
+}
+
+function clamp(value: number, min: number = 0, max: number = 1) {
+  return value < min ? min : value > max ? max : value;
 }
